@@ -1,10 +1,13 @@
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
 
 import javax.swing.JFrame;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.JPanel;
 
 import com.alee.laf.WebLookAndFeel;
+import com.alee.laf.progressbar.WebProgressBar;
 
 public class Main {
 
@@ -37,6 +40,20 @@ public class Main {
 		frame.setResizable(false);
 		frame.setSize(800, 560);
 		
+		// show startup loading bar
+		JPanel startupLoadingPanel = new JPanel(new GridBagLayout());
+		WebProgressBar startupLoadingBar = new WebProgressBar();
+		startupLoadingBar.setIndeterminate(true);
+		startupLoadingBar.setStringPainted(true);
+		startupLoadingBar.setString("Loading");
+		startupLoadingBar.setFont(new Font(startupLoadingBar.getFont().getName(), Font.BOLD, 16));
+		startupLoadingPanel.add(startupLoadingBar, new GridBagConstraints());
+		frame.getContentPane().add(startupLoadingPanel);
+		
+		// display the main frame
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
+		
 		// preload the start view
 		startView = new StartView(templateData);
 		
@@ -48,8 +65,6 @@ public class Main {
 			frame.getContentPane().add(startView.getView());
 			frame.revalidate();
 			frame.repaint();
-			
-			if (!frame.isVisible()) frame.setVisible(true);
 			
 			// wait until the 'Create Crossword' button is clicked
 			while (!startView.isReady()) {
