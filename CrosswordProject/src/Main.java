@@ -5,13 +5,12 @@ import java.awt.GridBagConstraints;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 
 import com.alee.laf.WebLookAndFeel;
-import com.alee.laf.progressbar.WebProgressBar;
 
 public class Main {
 
-	private static TemplateData templateData;
 	private static Square[][] grid;
 	private static JFrame frame;
 	private static int mode;
@@ -39,7 +38,8 @@ public class Main {
 		
 		// startup loading bar
 		JPanel startupLoadingPanel = new JPanel(new GridBagLayout());
-		WebProgressBar startupLoadingBar = new WebProgressBar();
+		startupLoadingPanel.setBackground(Color.decode("#F5F5F5"));
+		JProgressBar startupLoadingBar = new JProgressBar();
 		startupLoadingBar.setIndeterminate(true);
 		startupLoadingBar.setStringPainted(true);
 		startupLoadingBar.setString("Loading");

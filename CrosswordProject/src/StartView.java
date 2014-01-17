@@ -117,14 +117,14 @@ public class StartView {
 		
 		// individual components
 		
-		// label displaying the currently selected size
+		// label showing the currently selected size
 		sizeLabel = new JLabel();
 		sizeLabel.setFont(new Font(sizeLabel.getFont().getName(), Font.PLAIN, 15));
 		sizeLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		sizeLabel.setVerticalAlignment(SwingConstants.BOTTOM);
 		sizePanel.add(sizeLabel);
 		
-		// slider changing the size of the crossword grid - having values from 2 to 6
+		// slider changing the size of the crossword grid - having values from 1 to 5
 		// and using sizeSlider.getValue()*2+3 gets us the odd numbers from 5 to 13
 		sizeSlider = new JSlider(1,5);
 		sizeSlider.setFocusable(false);
@@ -156,7 +156,7 @@ public class StartView {
 		importButton.setFocusable(false);
 		templatePanel.add(importButton, BorderLayout.SOUTH);
 		
-		// radio buttons for switching between setter mode and player mode
+		// radio buttons for switching between setter and player mode
 		ButtonGroup modeButtons = new ButtonGroup();
 		playerButton = new JRadioButton(" Player Mode");
 		playerButton.addActionListener(new PlayerButtonListener());	
@@ -172,7 +172,7 @@ public class StartView {
 		modePanel.add(setterButton);		
 		playerButton.setSelected(true);
 		
-		// buttons that initiates the next stage of the application
+		// button that initiates the next phase of the application
 		createButton = new WebButton("Create Crossword");
 		springLayout.putConstraint(SpringLayout.SOUTH, optionsPanel, -16, SpringLayout.NORTH, createButton);
 		springLayout.putConstraint(SpringLayout.NORTH, createButton, 16, SpringLayout.SOUTH, previewPanel);

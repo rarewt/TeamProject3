@@ -19,8 +19,7 @@ public class TemplateData {
 					FileReader reader = new FileReader(file);
 					Scanner lineScanner = new Scanner(reader);  
 			        if (lineScanner.hasNext() == false) continue; // skip empty files
-			        // create a string representation of the template (via 
-			        // comma separated values) from the contents of the file
+			        // create a string representation of the template from the contents of the file
 			        String template = "";
 			        int templateSize = 0;
 					while (true) {
@@ -31,8 +30,7 @@ public class TemplateData {
 					}
 					lineScanner.close();
 					reader.close();
-					// proceed only if the size of the template
-					// is in the supported range (between 5 and 13)
+					// proceed only if the size of the template is in the supported range (between 5 and 13)
 					if ((template.split(",").length)%2 == 0 ||
 						(template.split(",").length) < 5 ||
 						(template.split(",").length) > 13)

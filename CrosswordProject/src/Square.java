@@ -32,13 +32,15 @@ public class Square {
 		panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		panel.setFocusable(false);
 		
-		note = new JLabel(""); // font size depends on grid size
+		note = new JLabel("");
+		// font size depends on grid size
 		note.setFont(new Font(note.getFont().getName(), Font.PLAIN, 14 - size/2));
 		panel.add(note);
 		
 		displayed = new JLabel(""); // empty by default
 		displayed.setHorizontalAlignment(SwingConstants.CENTER);
 		displayed.setVerticalAlignment(SwingConstants.CENTER);
+		// font size depends on grid size
 		displayed.setFont(new Font(displayed.getFont().getName(), Font.PLAIN, adjustFontSize(size)));
 		panel.add(displayed);
 	}

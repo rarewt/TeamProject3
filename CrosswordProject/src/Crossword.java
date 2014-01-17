@@ -2,12 +2,11 @@ import java.awt.Color;
 import java.awt.GridLayout;
 import java.util.HashMap;
 
-import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
 public class Crossword {
 	
-	// this class will need:
+	// this class needs:
 	
 	// a 2D array of Square objects that represents the grid
 	// of squares and the letters assigned to each square

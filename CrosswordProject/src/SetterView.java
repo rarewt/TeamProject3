@@ -80,7 +80,7 @@ public class SetterView {
 		originalWordLength = 0;
 		ready = false;
 		
-		// enable the keyboard listening
+		// enable keyboard listening
 		KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         manager.addKeyEventDispatcher(new KeyDispatcher());
 		
@@ -128,7 +128,7 @@ public class SetterView {
 				
 		// individual menu components
 		settingsMenuBar.add(new JLabel("    "));
-		JMenu fileMenu = new JMenu("File");
+		fileMenu = new JMenu("File");
 		fileMenu.setFont(new Font(fileMenu.getFont().getName(), Font.PLAIN, 15));
 		settingsMenuBar.add(fileMenu);
 		settingsMenuBar.add(new JLabel(" "));
@@ -154,11 +154,11 @@ public class SetterView {
 		});
 		fileMenu.add(exitProgram);
 		
-		JMenu viewMenu = new JMenu("View");
+		viewMenu = new JMenu("View");
 		viewMenu.setFont(new Font(viewMenu.getFont().getName(), Font.PLAIN, 15));
 		settingsMenuBar.add(viewMenu);
 		settingsMenuBar.add(new JLabel(" "));
-		JMenu helpMenu = new JMenu("Help");
+		helpMenu = new JMenu("Help");
 		helpMenu.setFont(new Font(helpMenu.getFont().getName(), Font.PLAIN, 15));
 		settingsMenuBar.add(helpMenu);
 		
