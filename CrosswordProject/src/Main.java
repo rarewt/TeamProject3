@@ -1,5 +1,5 @@
-import java.awt.Color;
 import java.awt.Font;
+import java.awt.Color;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 
@@ -29,9 +29,6 @@ public class Main {
 		
 		// any dictionary processing goes here
 		
-		// load the crossword grid templates
-		templateData = new TemplateData();
-		
 		// set up the main frame
 		frame = new JFrame();
 		frame.setTitle("Crossword Compiler");
@@ -40,7 +37,7 @@ public class Main {
 		frame.setResizable(false);
 		frame.setSize(800, 560);
 		
-		// show startup loading bar
+		// startup loading bar
 		JPanel startupLoadingPanel = new JPanel(new GridBagLayout());
 		WebProgressBar startupLoadingBar = new WebProgressBar();
 		startupLoadingBar.setIndeterminate(true);
@@ -54,12 +51,12 @@ public class Main {
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 		
-		// preload the start view
-		startView = new StartView(templateData);
+		// load the start view
+		startView = new StartView();
 		
 		while (true) {
 		
-			// set up the start view
+			// display the start view
 			startView.reset();
 			frame.getContentPane().removeAll();
 			frame.getContentPane().add(startView.getView());
@@ -72,19 +69,16 @@ public class Main {
 				catch (InterruptedException e) {}
 			}		
 			
-			// get the data from with the start view
+			// get the data from the start view
 			grid = startView.getPreview().getGrid();
 			mode = startView.getMode();
 					
-			// may add add a loading sign / progress bar here
+			// may add a loading bar here
 			
 			// next - create a filler class and complete the grid using the fill() method
 			// so the code should look like
 			// Filler filler = new Filler(grid, . . .);
 			// filler.fill(1, 0);			
-
-			// crossword = filler.getCrossword();
-			// or
 			// crossword = new Crossword(filler.getGrid());
 			
 			// sample 5x5 crossword
@@ -92,22 +86,22 @@ public class Main {
 			
 			if (mode == 0) { // setter mode
 				frame.getContentPane().removeAll();
-				setterView = new SetterView(crossword);
+				setterView = new SetterView(crossword); // set up
 				frame.getContentPane().add(setterView.getView());
 				frame.revalidate();
-				frame.repaint();
-				while (!setterView.isReady()) {
+				frame.repaint(); // display
+				while (!setterView.isReady()) { // 'New Crossword' is clicked
 					try {Thread.sleep(100);}
 					catch (InterruptedException e) {}
 				}
 			}
 			else { // player mode
 				frame.getContentPane().removeAll();
-				playerView = new PlayerView(crossword);
+				playerView = new PlayerView(crossword); // set up
 				frame.getContentPane().add(playerView.getView());
 				frame.revalidate();
-				frame.repaint();
-				while (!playerView.isReady()) {
+				frame.repaint(); // display
+				while (!playerView.isReady()) { // 'New Crossword' is clicked
 					try {Thread.sleep(100);}
 					catch (InterruptedException e) {}
 				}

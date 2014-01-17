@@ -46,10 +46,9 @@ public class StartView {
 	private JFileChooser chooser;
 	private boolean ready;
 	
-	public StartView(TemplateData templateData) {		
-		data = templateData;
-		// for faster rendering
-		chooser = new JFileChooser();
+	public StartView() {		
+		data = new TemplateData();
+		chooser = new JFileChooser(); // for faster rendering
 		chooser.setFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
 		previewCache = new ArrayList<GridPreview>();
 		for (HashMap<String, String> group : data.getTemplates().values())
@@ -198,8 +197,13 @@ public class StartView {
         		templateList.setListData(list);
         		templateList.setSelectedIndex(0);
         	}
-        	else
-        		templateList.setListData(new Object[0]); // no templates for that size = empty list
+        	else { // no templates for that size => empty list
+        		templateList.setListData(new Object[0]);
+        		previewPanel.removeAll(); // no preview
+        		previewPanel.revalidate();
+        		previewPanel.repaint();
+        		selectedPreview = new GridPreview("");
+        	}
         }
     }
     
