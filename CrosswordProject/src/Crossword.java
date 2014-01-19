@@ -45,6 +45,33 @@ public class Crossword {
 		return size;
 	}
 	
+	// final constructor
+	
+	// final constructor
+	public Crossword(Square[][] selectedGrid){
+		grid = selectedGrid;
+		size = grid.length;
+		
+		//presume grid is filled thanks to the filler class already
+		
+		// add the square panels to the visualization
+		visuals = new JPanel();
+		visuals.setBackground(Color.decode("#F5F5F5"));
+		visuals.setLayout(new GridLayout(size, size));
+		for (int y=0; y < size; y++) {
+			for (int x=0; x < size; x++) {
+				visuals.add(grid[x][y].getPanel());
+			}
+		}
+				
+		// create mappings to words and clues
+		across = new HashMap<Integer, String[]>();
+		down = new HashMap<Integer, String[]>();
+		// ...
+	}
+	
+	
+	
 	// this constructor creates a test 5x5 crossword in the format
 	// -----
 	// -###-
