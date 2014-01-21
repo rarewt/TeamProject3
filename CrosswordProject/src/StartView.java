@@ -218,6 +218,10 @@ public class StartView {
     
     private class ImportButtonListener implements ActionListener {
     	public void actionPerformed(ActionEvent event) {
+    		if (chooser == null) {
+    			chooser = new JFileChooser();
+    			chooser.setFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
+    		}
 			int returnValue = chooser.showOpenDialog(templatePanel);
 			if (returnValue == JFileChooser.APPROVE_OPTION) {
 				try { // process the selected file
@@ -276,12 +280,11 @@ public class StartView {
     // searches the cache for a certain preview and returns it
     // if that preview is not in the cache - returns a new one
     public GridPreview setupPreview(String template) {
-    	long s = System.currentTimeMillis();
 		for (int i = 0; i < previewCache.size(); i++)
-				if (previewCache.get(i).toString().equals(template)) {
-					previewCache.get(i).reset(); // removing this line enables saving preview edits
-					return previewCache.get(i);
-				}
+			if (previewCache.get(i).toString().equals(template)) {
+				previewCache.get(i).reset(); // removing this line enables saving preview edits
+				return previewCache.get(i);
+			}
 		GridPreview newPreview = new GridPreview(template);
 		previewCache.add(newPreview);
 		return newPreview;
