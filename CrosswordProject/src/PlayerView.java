@@ -306,10 +306,10 @@ public class PlayerView {
 					// iterate to find the target
 					for (int y = 0; y < crossword.getSize(); y++)
 						for (int x = 0; x < crossword.getSize(); x++)
-							if (crossword.getGrid()[x][y].getNote().getText().equals(
-								(((String) clueList.getSelectedValue()).charAt(0)) + "")) { // target found
+							if (findPosition((String) clueList.getSelectedValue()).matches(
+								crossword.getGrid()[x][y].getNote().getText() + ".")) { // target found
 								// set the direction of the selection
-								if (((String) clueList.getSelectedValue()).charAt(1) == 'a') {
+								if (findPosition((String) clueList.getSelectedValue()).endsWith("a")) {
 									acrossSelection = true;
 									downSelection = false;
 								}
@@ -428,7 +428,7 @@ public class PlayerView {
 					listLocked = true;
 					for (int i = 0; i < clueList.getModel().getSize(); i++) {
 						String clue = clueList.getModel().getElementAt(i).toString();
-						if (clue.substring(0, 2).equals(current.getNote().getText() + "a")) {
+						if (clue.startsWith(current.getNote().getText() + "a")) {
 							clueList.setSelectedValue(clue, true);
 							selectedClue = clue;
 						}
@@ -453,7 +453,7 @@ public class PlayerView {
 					listLocked = true;
 					for (int i = 0; i < clueList.getModel().getSize(); i++) {
 						String clue = clueList.getModel().getElementAt(i).toString();
-						if (clue.substring(0, 2).equals(current.getNote().getText() + "d")) {
+						if (clue.startsWith(current.getNote().getText() + "d")) {
 							clueList.setSelectedValue(clue, true);
 							selectedClue = clue;
 						}
@@ -554,7 +554,7 @@ public class PlayerView {
 				// the rest are for the unselected squares
 				// color the marked squares
 				if (crossword.getGrid()[x][y].isMarked()) {
-					crossword.getGrid()[x][y].getPanel().setBackground(Color.decode("#E0E0E0"));
+					crossword.getGrid()[x][y].getPanel().setBackground(Color.decode("#DCDCDC"));
 					crossword.getGrid()[x][y].getDisplayed().setForeground(Color.BLACK);
 					crossword.getGrid()[x][y].getNote().setForeground(Color.BLACK);
 					crossword.getGrid()[x][y].fixNote();
@@ -589,6 +589,16 @@ public class PlayerView {
 		if (y > 0) if (crossword.getGrid()[x][y-1].getLetter() != '-') up = true;
 		if (y + 1 < crossword.getSize()) if (crossword.getGrid()[x][y+1].getLetter() != '-') down = true;
 		return (left && up) || (left && down) || (right && up) || (right && down);
+	}
+	
+	// when used with "10a. <Clue Name> (5)" - returns "10a"
+	public String findPosition(String selectedItem) {
+		String position = "";
+		for (int i = 0; i < selectedItem.length(); i++) {
+			position += selectedItem.charAt(i);
+			if (selectedItem.charAt(i) == 'a' || selectedItem.charAt(i) == 'd') break;
+		}
+		return position;
 	}
 
 }

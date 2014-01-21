@@ -69,14 +69,14 @@ public class Crossword {
 		for (int y=0; y < size; y++)
 			for (int x=0; x < size; x++)
 				if (grid[x][y].startsAcrossWord()) {
-					String[] wordData = {findAcrossWord(x, y), "Meguca"};
+					String[] wordData = {findAcrossWord(x, y), "Placeholder"};
 					across.put(Integer.parseInt(grid[x][y].getNote().getText()), wordData);
 				}
 		down = new HashMap<Integer, String[]>();
 		for (int x=0; x < size; x++)
 			for (int y=0; y < size; y++)
 				if (grid[x][y].startsDownWord()) {
-					String[] wordData = {findDownWord(x, y), "Meguca	"};
+					String[] wordData = {findDownWord(x, y), "Placeholder"};
 					down.put(Integer.parseInt(grid[x][y].getNote().getText()), wordData);
 				}
 	}	
