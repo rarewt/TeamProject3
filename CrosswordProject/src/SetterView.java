@@ -591,7 +591,7 @@ public class SetterView {
 			for (int x = 0; x < crossword.getSize(); x++) {
 				// color the marked squares
 				if (crossword.getGrid()[x][y].isMarked()) {
-					crossword.getGrid()[x][y].getPanel().setBackground(Color.decode("#E2E2E2"));
+					crossword.getGrid()[x][y].getPanel().setBackground(Color.decode("#E0E0E0"));
 					crossword.getGrid()[x][y].getDisplayed().setForeground(Color.BLACK);
 					crossword.getGrid()[x][y].getNote().setForeground(Color.BLACK);
 					crossword.getGrid()[x][y].fixNote();

@@ -305,10 +305,4 @@ public class StartView {
 	public boolean isReady() {
 		return ready;
 	}
-	
-	public void reset() {
-		selectedPreview.reset();
-		ready = false;
-	}
-	
 }

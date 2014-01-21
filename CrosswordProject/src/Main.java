@@ -2,6 +2,9 @@ import java.awt.Font;
 import java.awt.Color;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -19,14 +22,27 @@ public class Main {
 	private static SetterView setterView;
 	private static PlayerView playerView;
 
-	// plus any other necessary variables
-
 	public static void main(String[] args) {
 		
 		// custom look and feel
 		WebLookAndFeel.install();
 		
-		// any dictionary processing goes here
+		// complete the dictionary
+		MasterDictionary masterDictionary = new MasterDictionary();
+		File file = new File("word.txt");				
+			try {
+				Scanner input = new Scanner(file);
+				while (input.hasNextLine()) {
+					String s = input.nextLine();
+					if (s.length() < 16 && s.length()>2) {
+						masterDictionary.addWord(s);
+					}
+				}
+				input.close();
+				masterDictionary.process();
+			} catch (FileNotFoundException e) {
+				System.out.println("file not found");
+			}
 		
 		// set up the main frame
 		frame = new JFrame();
@@ -35,29 +51,20 @@ public class Main {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setResizable(false);
 		frame.setSize(800, 560);
-		
-		// startup loading bar
-		JPanel startupLoadingPanel = new JPanel(new GridBagLayout());
-		startupLoadingPanel.setBackground(Color.decode("#F5F5F5"));
-		JProgressBar startupLoadingBar = new JProgressBar();
-		startupLoadingBar.setIndeterminate(true);
-		startupLoadingBar.setStringPainted(true);
-		startupLoadingBar.setString("Loading");
-		startupLoadingBar.setFont(new Font(startupLoadingBar.getFont().getName(), Font.BOLD, 16));
-		startupLoadingPanel.add(startupLoadingBar, new GridBagConstraints());
-		frame.getContentPane().add(startupLoadingPanel);
-		
-		// display the main frame
-		frame.setLocationRelativeTo(null);
-		frame.setVisible(true);
-		
-		// load the start view
-		startView = new StartView();
-		
+
 		while (true) {
 		
-			// display the start view
-			startView.reset();
+			// loading phase
+			displayLoadingBar();
+			
+			// display the main frame
+			if (!frame.isVisible()) {
+				frame.setLocationRelativeTo(null);
+				frame.setVisible(true);
+			}
+			
+			// set up the start view
+			startView = new StartView();
 			frame.getContentPane().removeAll();
 			frame.getContentPane().add(startView.getView());
 			frame.revalidate();
@@ -73,17 +80,15 @@ public class Main {
 			grid = startView.getPreview().getGrid();
 			mode = startView.getMode();
 					
-			// may add a loading bar here
+			// loading phase
+			displayLoadingBar();
 			
-			// next - create a filler class and complete the grid using the fill() method
-			// so the code should look like
-			// Filler filler = new Filler(grid, . . .);
-			// filler.fill(1, 0);			
-			// crossword = new Crossword(filler.getGrid());
+			// create a filler class and complete the grid using the fill() method
+			Filler filler = new Filler(grid, masterDictionary);
+			filler.fill(1, 0); // initiate the grid-filling algorithm			
+			crossword = new Crossword(filler.getGrid());
 			
-			// sample 5x5 crossword
-			crossword = new Crossword();
-			
+			// when the crossword is ready:
 			if (mode == 0) { // setter mode
 				frame.getContentPane().removeAll();
 				setterView = new SetterView(crossword); // set up
@@ -109,6 +114,22 @@ public class Main {
 			
 		}
 		
+	}
+	
+	// shows a loading bar
+	private static void displayLoadingBar() {
+		JPanel loadingPanel = new JPanel(new GridBagLayout());
+		loadingPanel.setBackground(Color.decode("#F5F5F5"));
+		JProgressBar loadingBar = new JProgressBar();
+		loadingBar.setIndeterminate(true);
+		loadingBar.setStringPainted(true);
+		loadingBar.setString("Loading");
+		loadingBar.setFont(new Font(loadingBar.getFont().getName(), Font.BOLD, 16));
+		loadingPanel.add(loadingBar, new GridBagConstraints());
+		frame.getContentPane().removeAll();
+		frame.getContentPane().add(loadingPanel);
+		frame.revalidate();
+		frame.repaint();
 	}
 
 }

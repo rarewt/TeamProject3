@@ -1,27 +1,26 @@
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.awt.event.MouseListener;
 import java.util.HashMap;
 
 import javax.swing.JPanel;
 
 public class Crossword {
 	
-	// this class needs:
-	
 	// a 2D array of Square objects that represents the grid
 	// of squares and the letters assigned to each square
 	private Square[][] grid;
 	
-	// a panel that contains all the panels from the Square objects and serves
+	// a panel that contains all basic panels from the Square objects and serves
 	// as a visualization of the crossword (like the one in GridPreview)
 	private JPanel visuals;
 	
-	// a hash map that maps starting positions to words and clues -
-	// e.g. key - "1a" / value - ["crossword", "a type of word puzzle"]
+	// hash maps that map starting positions to words and clues -
+	// e.g. key - "1" / value - ["crossword", "a type of word puzzle"]
 	private HashMap<Integer, String[]> across;
 	private HashMap<Integer, String[]> down;
 	
-	// some other variables - if needed
+	// crossword size
 	private int size;
 
 	// getters for all of the above variables
@@ -46,13 +45,11 @@ public class Crossword {
 	}
 	
 	// final constructor
-	
-	// final constructor
 	public Crossword(Square[][] selectedGrid){
 		grid = selectedGrid;
 		size = grid.length;
 		
-		//presume grid is filled thanks to the filler class already
+		// presume grid is filled thanks to the filler class already
 		
 		// add the square panels to the visualization
 		visuals = new JPanel();
@@ -60,19 +57,31 @@ public class Crossword {
 		visuals.setLayout(new GridLayout(size, size));
 		for (int y=0; y < size; y++) {
 			for (int x=0; x < size; x++) {
+				for (MouseListener ml : grid[x][y].getPanel().getMouseListeners())
+					grid[x][y].getPanel().removeMouseListener(ml); // remove the old mouse listeners
+				if (grid[x][y].getLetter() == '-') grid[x][y].getPanel().setBackground(Color.BLACK); // self fixing
 				visuals.add(grid[x][y].getPanel());
 			}
 		}
 				
 		// create mappings to words and clues
 		across = new HashMap<Integer, String[]>();
+		for (int y=0; y < size; y++)
+			for (int x=0; x < size; x++)
+				if (grid[x][y].startsAcrossWord()) {
+					String[] wordData = {findAcrossWord(x, y), "Meguca"};
+					across.put(Integer.parseInt(grid[x][y].getNote().getText()), wordData);
+				}
 		down = new HashMap<Integer, String[]>();
-		// ...
-	}
+		for (int x=0; x < size; x++)
+			for (int y=0; y < size; y++)
+				if (grid[x][y].startsDownWord()) {
+					String[] wordData = {findDownWord(x, y), "Meguca	"};
+					down.put(Integer.parseInt(grid[x][y].getNote().getText()), wordData);
+				}
+	}	
 	
-	
-	
-	// this constructor creates a test 5x5 crossword in the format
+	// the no argument constructor creates a test 5x5 crossword in the format
 	// -----
 	// -###-
 	// -----
@@ -87,7 +96,6 @@ public class Crossword {
 				grid[x][y].getPanel().setBackground(Color.WHITE);
 			}
 		}
-		
 		
 		size = grid.length;
 		
@@ -168,6 +176,24 @@ public class Crossword {
 		across.put(3, word4);
 		String[] word5 = {"tales", "Traditional stories told in folklore"};
 		across.put(4, word5);
+	}
+	
+	public String findAcrossWord(int xCord, int yCord) {
+		String word = "";
+		for (int x = xCord; x <= grid.length-1; x++) {
+			if (grid[x][yCord].getPanel().getBackground() == Color.BLACK) break;
+			word += grid[x][yCord].getLetter();
+		}
+		return word;
+	}
+	
+	public String findDownWord(int xCord, int yCord) {
+		String word = "";
+		for (int y = yCord; y <= grid.length-1; y++) {
+			if (grid[xCord][y].getPanel().getBackground() == Color.BLACK) break;
+			word += grid[xCord][y].getLetter();
+		}
+		return word;
 	}
 	
 }
