@@ -29,8 +29,6 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JPanel;
 
-import com.alee.laf.button.WebButton;
-
 public class StartView {
 	
 	private TemplateData data;
@@ -128,6 +126,7 @@ public class StartView {
 		// and using sizeSlider.getValue()*2+3 gets us the odd numbers from 5 to 13
 		sizeSlider = new JSlider(1,5);
 		sizeSlider.setFocusable(false);
+		sizeSlider.setBackground(Color.decode("#F5F5F5"));
 		sizeSlider.addChangeListener(new sizeSliderListener());
 		sizeLabel.setText("Size: " + (sizeSlider.getValue()*2+3) + " x " + (sizeSlider.getValue()*2+3));
 		sizePanel.add(sizeSlider);
@@ -161,19 +160,21 @@ public class StartView {
 		playerButton = new JRadioButton(" Player Mode");
 		playerButton.addActionListener(new PlayerButtonListener());	
 		playerButton.setFont(new Font(playerButton.getFont().getName(), Font.PLAIN, 15));
+		playerButton.setBackground(Color.decode("#F5F5F5"));
 		playerButton.setFocusable(false);
 		modeButtons.add(playerButton);
 		modePanel.add(playerButton);
 		setterButton = new JRadioButton(" Setter Mode");
 		setterButton.addActionListener(new SetterButtonListener());	
 		setterButton.setFont(new Font(setterButton.getFont().getName(), Font.PLAIN, 15));
+		setterButton.setBackground(Color.decode("#F5F5F5"));
 		setterButton.setFocusable(false);
 		modeButtons.add(setterButton);	
 		modePanel.add(setterButton);		
 		playerButton.setSelected(true);
 		
 		// button that initiates the next phase of the application
-		createButton = new WebButton("Create Crossword");
+		createButton = new JButton("Create Crossword");
 		springLayout.putConstraint(SpringLayout.SOUTH, optionsPanel, -16, SpringLayout.NORTH, createButton);
 		springLayout.putConstraint(SpringLayout.NORTH, createButton, 16, SpringLayout.SOUTH, previewPanel);
 		springLayout.putConstraint(SpringLayout.WEST, createButton, 300, SpringLayout.WEST, view);

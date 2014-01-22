@@ -29,8 +29,6 @@ import javax.swing.ToolTipManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import com.alee.laf.list.WebListCellRenderer;
-
 public class PlayerView {
 
 	private JPanel view, crosswordPanel, optionsPanel, cluePanel;
@@ -154,11 +152,11 @@ public class PlayerView {
 			Object[] down = crossword.getDown().keySet().toArray();
 			Arrays.sort(across); Arrays.sort(down);
 			ArrayList<String> list = new ArrayList<String>();
-			list.add("Across");
+			list.add("<html><b>Across</b></html>");
 			for (int i = 0; i < across.length; i++)
 				list.add(across[i] + "a. " + crossword.getAcross().get(across[i])[1] +
 						 " (" + crossword.getAcross().get(across[i])[0].length() + ")");
-			list.add("Down");
+			list.add("<html><b>Down</b></html>");
 			for (int i = 0; i < down.length; i++)
 				list.add(down[i] + "d. " + crossword.getDown().get(down[i])[1] +
 						 " (" + crossword.getDown().get(down[i])[0].length() + ")");
@@ -168,7 +166,6 @@ public class PlayerView {
 		clueList.setFont(new Font(clueList.getFont().getName(), Font.PLAIN, 15));
 		clueList.addListSelectionListener(new ClueListListener());
 		clueList.addMouseMotionListener(new ToolTipSupport());
-		clueList.setCellRenderer(new BoldItemRenderer());
 		clueList.setFocusable(false);
 		clueScrollPane.setViewportView(clueList);
 		
@@ -227,23 +224,11 @@ public class PlayerView {
             ListModel model = list.getModel();
             int i = list.locationToIndex(event.getPoint());
             if (i > -1)
-            	if (!model.getElementAt(i).equals("Across") &&
-            		!model.getElementAt(i).equals("Down"))
+            	if (!model.getElementAt(i).equals("<html><b>Across</b></html>") &&
+            		!model.getElementAt(i).equals("<html><b>Down</b></html>"))
             		list.setToolTipText(model.getElementAt(i).toString());
             	else list.setToolTipText(null);
         }	
-	}
-	
-	// renders 'Across' and 'Down' with bold font
-	private class BoldItemRenderer extends WebListCellRenderer {
-		public Component getListCellRendererComponent(JList list, Object value,
-	                        int index, boolean isSelected, boolean cellHasFocus) {
-	        JComponent component = (JComponent) super.getListCellRendererComponent(list,
-	                							  value, index, isSelected, cellHasFocus);
-	        if (index > -1 && (value.equals("Across") || (value.equals("Down"))))
-	        	setFont(new Font(this.getFont().getName(), Font.BOLD, 15));
-	        return component;
-	    }
 	}
 	
 	// listeners for the play buttons
@@ -289,8 +274,8 @@ public class PlayerView {
 				// do nothing if the same value is selected again
 				if (selectedClue.equals((String) clueList.getSelectedValue())) return;
 				// avoid selecting 'Across' and 'Down'
-				if (clueList.getSelectedValue().equals("Across") || 
-					clueList.getSelectedValue().equals("Down")) {
+				if (clueList.getSelectedValue().equals("<html><b>Across</b></html>") || 
+					clueList.getSelectedValue().equals("<html><b>Down</b></html>")) {
 					if (selectedClue.equals("")) clueList.clearSelection();
 					else clueList.setSelectedValue(selectedClue, false);
 					return;
