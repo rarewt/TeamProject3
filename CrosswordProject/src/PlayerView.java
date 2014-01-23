@@ -50,8 +50,11 @@ public class PlayerView {
 		view.setLayout(springLayout);
 		// enable the selection of words
 		for (int y = 0; y < crossword.getSize(); y++)
-			for (int x = 0; x < crossword.getSize(); x++)
+			for (int x = 0; x < crossword.getSize(); x++) {
 				crossword.getGrid()[x][y].getPanel().addMouseListener(new MouseSelectionListener());
+				if (crossword.getGrid()[x][y].getLetter() == '-')
+					crossword.getGrid()[x][y].getDisplayed().setForeground(Color.BLACK);
+			}
 		view.addMouseListener(new MouseDeselectionListener());
 		selectedClue = "";
 		selectedX = 0;

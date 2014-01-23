@@ -21,28 +21,12 @@ public class Main {
 	private static StartView startView;
 	private static SetterView setterView;
 	private static PlayerView playerView;
+	private static MasterDictionary masterDictionary;
 
 	public static void main(String[] args) {
 		
 		// custom look and feel
 		WebLookAndFeel.install();
-		
-		// complete the dictionary
-		MasterDictionary masterDictionary = new MasterDictionary();
-		File file = new File("word.txt");				
-			try {
-				Scanner input = new Scanner(file);
-				while (input.hasNextLine()) {
-					String s = input.nextLine();
-					if (s.length() < 16 && s.length()>2) {
-						masterDictionary.addWord(s);
-					}
-				}
-				input.close();
-				masterDictionary.process();
-			} catch (FileNotFoundException e) {
-				System.out.println("file not found");
-			}
 		
 		// set up the main frame
 		frame = new JFrame();
@@ -61,6 +45,25 @@ public class Main {
 			if (!frame.isVisible()) {
 				frame.setLocationRelativeTo(null);
 				frame.setVisible(true);
+			}
+			
+			// complete the dictionary
+			if (masterDictionary == null) {
+				masterDictionary = new MasterDictionary();
+				File file = new File("word.txt");				
+					try {
+						Scanner input = new Scanner(file);
+						while (input.hasNextLine()) {
+							String s = input.nextLine();
+							if (s.length() < 16 && s.length()>2) {
+								masterDictionary.addWord(s);
+							}
+						}
+						input.close();
+						masterDictionary.process();
+					} catch (FileNotFoundException e) {
+						System.out.println("file not found");
+					}
 			}
 			
 			// set up the start view
@@ -83,34 +86,44 @@ public class Main {
 			// loading phase
 			displayLoadingBar();
 			
-			// create a filler class and complete the grid using the fill() method
-			Filler filler = new Filler(grid, masterDictionary);
-			filler.fill(1, 0); // initiate the grid-filling algorithm			
-			crossword = new Crossword(filler.getGrid());
+			boolean successfulCompilation = true;
 			
-			// when the crossword is ready:
-			if (mode == 0) { // setter mode
-				frame.getContentPane().removeAll();
-				setterView = new SetterView(crossword); // set up
-				frame.getContentPane().add(setterView.getView());
-				frame.revalidate();
-				frame.repaint(); // display
-				while (!setterView.isReady()) { // 'New Crossword' is clicked
-					try {Thread.sleep(100);}
-					catch (InterruptedException e) {}
+			try {
+				// create a filler class and complete the grid using the fill() method
+				Filler filler = new Filler(grid, masterDictionary);
+				filler.fill(1, 0); // initiate the grid-filling algorithm			
+				crossword = new Crossword(filler.getGrid());
+			}
+			catch (Exception e) {
+				successfulCompilation = false;
+			}
+			
+			if (successfulCompilation) {
+				// when the crossword is ready:
+				if (mode == 0) { // setter mode
+					frame.getContentPane().removeAll();
+					setterView = new SetterView(crossword); // set up
+					frame.getContentPane().add(setterView.getView());
+					frame.revalidate();
+					frame.repaint(); // display
+					while (!setterView.isReady()) { // 'New Crossword' is clicked
+						try {Thread.sleep(100);}
+						catch (InterruptedException e) {}
+					}
+				}
+				else { // player mode
+					frame.getContentPane().removeAll();
+					playerView = new PlayerView(crossword); // set up
+					frame.getContentPane().add(playerView.getView());
+					frame.revalidate();
+					frame.repaint(); // display
+					while (!playerView.isReady()) { // 'New Crossword' is clicked
+						try {Thread.sleep(100);}
+						catch (InterruptedException e) {}
+					}
 				}
 			}
-			else { // player mode
-				frame.getContentPane().removeAll();
-				playerView = new PlayerView(crossword); // set up
-				frame.getContentPane().add(playerView.getView());
-				frame.revalidate();
-				frame.repaint(); // display
-				while (!playerView.isReady()) { // 'New Crossword' is clicked
-					try {Thread.sleep(100);}
-					catch (InterruptedException e) {}
-				}
-			}
+			// TODO else - panel with an error message + 'go back to start' button
 			
 		}
 		
