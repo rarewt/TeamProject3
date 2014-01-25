@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,27 +33,27 @@ import javax.swing.JPanel;
 public class StartView {
 	
 	private TemplateData data;
+	private OptionsInterface options;
 	private JPanel view, previewPanel, optionsPanel, sizePanel, templatePanel, modePanel;
 	private JRadioButton setterButton, playerButton;
-	private JButton importButton, createButton;
+	private JButton createButton;
 	private JLabel sizeLabel;
 	private JSlider sizeSlider;
 	private JList templateList;
-	private int selectedMode; // 0 for setter / 1 for player
+	private int selectedMode; // 0 for player / 1 for setter
 	private ArrayList<GridPreview> previewCache;
 	private GridPreview selectedPreview;
-	private JFileChooser chooser;
 	private boolean ready;
+	private JFileChooser chooser;
+	private Crossword loadedCrossword; // used for direct loading
 	
 	public StartView() {		
 		data = new TemplateData();
-		chooser = new JFileChooser(); // for faster rendering
-		chooser.setFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
 		previewCache = new ArrayList<GridPreview>();
 		for (HashMap<String, String> group : data.getTemplates().values())
 			for (String template : group.values()) previewCache.add(new GridPreview(template));
 		selectedPreview = new GridPreview("");
-		selectedMode = 1;
+		selectedMode = 0; // player is default
 		ready = false;
 
 		view = new JPanel();
@@ -60,14 +61,30 @@ public class StartView {
 		SpringLayout springLayout = new SpringLayout();
 		view.setLayout(springLayout);
 		
+		// top menu bar
+		optionsPanel = new JPanel();
+		optionsPanel.setLayout(new BorderLayout());
+		optionsPanel.setBackground(Color.decode("#F5F5F5"));
+		springLayout.putConstraint(SpringLayout.NORTH, optionsPanel, 0, SpringLayout.NORTH, view);
+		springLayout.putConstraint(SpringLayout.WEST, optionsPanel, 0, SpringLayout.WEST, view);
+		springLayout.putConstraint(SpringLayout.SOUTH, optionsPanel, 38, SpringLayout.NORTH, view);
+		springLayout.putConstraint(SpringLayout.EAST, optionsPanel, 0, SpringLayout.EAST, view);
+		options = new OptionsInterface(0); // represents the top menu bar
+		optionsPanel.add(options.getMenuBar(), BorderLayout.CENTER);
+		// view-specific functionality
+		options.getImportTemplate().addActionListener(new ImportTemplateListener());
+		options.getExportTemplate().addActionListener(new ExportTemplateListener());
+		options.getLoadCrossword().addActionListener(new LoadCrosswordListener());
+		view.add(optionsPanel);
+		
 		// editable grid preview 	
 		previewPanel = new JPanel();
 		previewPanel.setLayout(new BorderLayout());
 		previewPanel.setBackground(Color.WHITE);
-		springLayout.putConstraint(SpringLayout.NORTH, previewPanel, 26, SpringLayout.NORTH, view);
-		springLayout.putConstraint(SpringLayout.WEST, previewPanel, 26, SpringLayout.WEST, view);
-		springLayout.putConstraint(SpringLayout.SOUTH, previewPanel, -63, SpringLayout.SOUTH, view);
-		springLayout.putConstraint(SpringLayout.EAST, previewPanel, -326, SpringLayout.EAST, view);
+		springLayout.putConstraint(SpringLayout.NORTH, previewPanel, 63, SpringLayout.NORTH, view);
+		springLayout.putConstraint(SpringLayout.WEST, previewPanel, 25, SpringLayout.WEST, view);
+		springLayout.putConstraint(SpringLayout.SOUTH, previewPanel, -26, SpringLayout.SOUTH, view);
+		springLayout.putConstraint(SpringLayout.EAST, previewPanel, -327, SpringLayout.EAST, view);
 		view.add(previewPanel);
 		
 		// this panel contains options for
@@ -77,8 +94,9 @@ public class StartView {
 		//    - selecting a mode
 		optionsPanel = new JPanel();
 		springLayout.putConstraint(SpringLayout.NORTH, optionsPanel, 0, SpringLayout.NORTH, previewPanel);
-		springLayout.putConstraint(SpringLayout.WEST, optionsPanel, 16, SpringLayout.EAST, previewPanel);
-		springLayout.putConstraint(SpringLayout.EAST, optionsPanel, -14, SpringLayout.EAST, view);
+		springLayout.putConstraint(SpringLayout.WEST, optionsPanel, 18, SpringLayout.EAST, previewPanel);
+		springLayout.putConstraint(SpringLayout.EAST, optionsPanel, -13, SpringLayout.EAST, view);
+		springLayout.putConstraint(SpringLayout.SOUTH, optionsPanel, 0, SpringLayout.SOUTH, previewPanel);
 		optionsPanel.setBackground(Color.decode("#F5F5F5"));
 		SpringLayout optionsLayout = new SpringLayout();
 		optionsPanel.setLayout(optionsLayout);
@@ -98,9 +116,9 @@ public class StartView {
 		modePanel = new JPanel();
 		optionsLayout.putConstraint(SpringLayout.WEST, modePanel, 11, SpringLayout.WEST, optionsPanel);
 		optionsLayout.putConstraint(SpringLayout.EAST, modePanel, -10, SpringLayout.EAST, optionsPanel);		
-		optionsLayout.putConstraint(SpringLayout.NORTH, modePanel, -57, SpringLayout.SOUTH, optionsPanel);
+		optionsLayout.putConstraint(SpringLayout.NORTH, modePanel, -24, SpringLayout.SOUTH, optionsPanel);
 		modePanel.setBackground(Color.decode("#F5F5F5"));
-		modePanel.setLayout(new GridLayout(2, 1, 0, 0));
+		modePanel.setLayout(new GridLayout(1, 2, 0, 0));
 		optionsPanel.add(modePanel);
 		
 		templatePanel = new JPanel();
@@ -148,23 +166,23 @@ public class StartView {
 		templateList.setFocusable(false);
 		templateScrollPane.setViewportView(templateList);
 		
-		// button for importing a template from a text file
-		importButton = new JButton("Import Grid Template");
-		importButton.addActionListener(new ImportButtonListener());	
-		importButton.setFont(new Font(importButton.getFont().getName(), Font.PLAIN, 15));
-		importButton.setFocusable(false);
-		templatePanel.add(importButton, BorderLayout.SOUTH);
+		// button that initiates the next phase of the application
+		createButton = new JButton("Generate Crossword");
+		createButton.addActionListener(new CreateButtonListener());	
+		createButton.setFont(new Font(createButton.getFont().getName(), Font.PLAIN, 15));
+		createButton.setFocusable(false);
+		templatePanel.add(createButton, BorderLayout.SOUTH);
 		
 		// radio buttons for switching between setter and player mode
 		ButtonGroup modeButtons = new ButtonGroup();
-		playerButton = new JRadioButton(" Player Mode");
+		playerButton = new JRadioButton(" Solving Mode");
 		playerButton.addActionListener(new PlayerButtonListener());	
 		playerButton.setFont(new Font(playerButton.getFont().getName(), Font.PLAIN, 15));
 		playerButton.setBackground(Color.decode("#F5F5F5"));
 		playerButton.setFocusable(false);
 		modeButtons.add(playerButton);
 		modePanel.add(playerButton);
-		setterButton = new JRadioButton(" Setter Mode");
+		setterButton = new JRadioButton(" Editing Mode");
 		setterButton.addActionListener(new SetterButtonListener());	
 		setterButton.setFont(new Font(setterButton.getFont().getName(), Font.PLAIN, 15));
 		setterButton.setBackground(Color.decode("#F5F5F5"));
@@ -172,19 +190,6 @@ public class StartView {
 		modeButtons.add(setterButton);	
 		modePanel.add(setterButton);		
 		playerButton.setSelected(true);
-		
-		// button that initiates the next phase of the application
-		createButton = new JButton("Create Crossword");
-		springLayout.putConstraint(SpringLayout.SOUTH, optionsPanel, -16, SpringLayout.NORTH, createButton);
-		springLayout.putConstraint(SpringLayout.NORTH, createButton, 16, SpringLayout.SOUTH, previewPanel);
-		springLayout.putConstraint(SpringLayout.WEST, createButton, 300, SpringLayout.WEST, view);
-		springLayout.putConstraint(SpringLayout.SOUTH, createButton, -16, SpringLayout.SOUTH, view);
-		springLayout.putConstraint(SpringLayout.EAST, createButton, -300, SpringLayout.EAST, view);
-		createButton.addActionListener(new CreateButtonListener());
-		createButton.setFont(new Font(createButton.getFont().getName(), Font.PLAIN, 15));
-
-		createButton.setFocusable(false);
-		view.add(createButton);
 	}
 	
     private class sizeSliderListener implements ChangeListener {
@@ -217,48 +222,21 @@ public class StartView {
 		}
     }
     
-    private class ImportButtonListener implements ActionListener {
+    private class CreateButtonListener implements ActionListener {
     	public void actionPerformed(ActionEvent event) {
-    		if (chooser == null) {
-    			chooser = new JFileChooser();
-    			chooser.setFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
-    		}
-			int returnValue = chooser.showOpenDialog(templatePanel);
-			if (returnValue == JFileChooser.APPROVE_OPTION) {
-				try { // process the selected file
-					if (!chooser.getSelectedFile().getName().endsWith("txt")) return;
-					FileReader reader = new FileReader(chooser.getSelectedFile());
-					Scanner lineScanner = new Scanner(reader);
-					String importedTemplate = "";
-					while (true) {
-						importedTemplate += lineScanner.nextLine();
-						if (lineScanner.hasNext()) importedTemplate += ",";
-						else break;
-					}
-					selectTemplate(importedTemplate);
-					lineScanner.close();
-					reader.close();
-				} catch (IOException e) {}
-				templateList.clearSelection();
-			}
-		}	
+    		if (selectedPreview.isValid()) ready = true;
+    	}	
     }
     
-    private class SetterButtonListener implements ActionListener {
+    private class PlayerButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
 			selectedMode = 0;
 		}
     }
     
-    private class PlayerButtonListener implements ActionListener {
+    private class SetterButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
 			selectedMode = 1;
-		}
-    }
-    
-    private class CreateButtonListener implements ActionListener {
-		public void actionPerformed(ActionEvent event) {
-			if (selectedPreview.isValid()) ready = true;
 		}
     }
     
@@ -306,4 +284,50 @@ public class StartView {
 	public boolean isReady() {
 		return ready;
 	}
+	
+	private class ImportTemplateListener implements ActionListener {
+		public void actionPerformed(ActionEvent event) {
+    		chooser = new JFileChooser(System.getProperty("user.dir"));
+    		chooser.setFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
+    		chooser.setDialogTitle("Select File");
+			int returnValue = chooser.showOpenDialog(null);
+			if (returnValue == JFileChooser.APPROVE_OPTION) {
+				try { // process the selected file
+					if (!chooser.getSelectedFile().getName().endsWith("txt")) return;
+					FileReader reader = new FileReader(chooser.getSelectedFile());
+					Scanner lineScanner = new Scanner(reader);
+					String importedTemplate = "";
+					while (true) {
+						importedTemplate += lineScanner.nextLine();
+						if (lineScanner.hasNext()) importedTemplate += ",";
+						else break;
+					}
+					selectTemplate(importedTemplate);
+					lineScanner.close();
+					reader.close();
+				} catch (IOException e) {}
+				templateList.clearSelection();
+			}
+		}	
+	}
+	
+	private class ExportTemplateListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			// placeholder
+		}	
+	}
+	
+	private class LoadCrosswordListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			// just replace this line with code that builds a complete crossword from a text file:
+			loadedCrossword = new Crossword();
+			// with this line, the Main moves forward and the next view works with loadedCrossword
+			ready = true;
+		}	
+	}
+	
+	public Crossword getLoadedCrossword() {
+		return loadedCrossword;
+	}
+	
 }

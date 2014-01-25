@@ -1,5 +1,3 @@
-
-
 public class MasterDictionary {
 	// this class store all Dictionaries of of one size
 

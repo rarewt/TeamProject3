@@ -31,15 +31,14 @@ import javax.swing.event.ListSelectionListener;
 
 public class PlayerView {
 
-	private JPanel view, crosswordPanel, optionsPanel, cluePanel;
-	private JMenuBar settingsMenuBar;
-	private JMenu fileMenu, viewMenu, helpMenu;
+	private JPanel view, crosswordPanel, controlsPanel, cluePanel, optionsPanel;
 	private JList clueList;
 	private JButton checkButton, checkAllButton, cheatButton, solutionButton;
 	private Crossword crossword;
 	private String selectedClue;
 	private int selectedX, selectedY, selectedDirection /* 0 - across / 1 - down */;
-	private boolean acrossSelection, downSelection, listLocked, ready;
+	private boolean acrossSelection, downSelection, listLocked, ready, reloading;
+	private OptionsInterface options;
 	private Color selectionColor;
 	
 	public PlayerView(Crossword c) {
@@ -63,6 +62,7 @@ public class PlayerView {
 		listLocked = false;
 		selectionColor = Color.decode("#4281F4");
 		ready = false;
+		reloading = false;
 		
 		// enable the keyboard listening
 		KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
@@ -72,17 +72,25 @@ public class PlayerView {
 		ToolTipManager.sharedInstance().setInitialDelay(500);
 		
 		// top menu bar
-		settingsMenuBar = new JMenuBar();
-		springLayout.putConstraint(SpringLayout.NORTH, settingsMenuBar, 0, SpringLayout.NORTH, view);
-		springLayout.putConstraint(SpringLayout.WEST, settingsMenuBar, 0, SpringLayout.WEST, view);
-		springLayout.putConstraint(SpringLayout.SOUTH, settingsMenuBar, 38, SpringLayout.NORTH, view);
-		springLayout.putConstraint(SpringLayout.EAST, settingsMenuBar, 0, SpringLayout.EAST, view);
-		settingsMenuBar.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, Color.decode("#AAAAAA")));
-		view.add(settingsMenuBar);
+		optionsPanel = new JPanel();
+		optionsPanel.setLayout(new BorderLayout());
+		optionsPanel.setBackground(Color.decode("#F5F5F5"));
+		springLayout.putConstraint(SpringLayout.NORTH, optionsPanel, 0, SpringLayout.NORTH, view);
+		springLayout.putConstraint(SpringLayout.WEST, optionsPanel, 0, SpringLayout.WEST, view);
+		springLayout.putConstraint(SpringLayout.SOUTH, optionsPanel, 38, SpringLayout.NORTH, view);
+		springLayout.putConstraint(SpringLayout.EAST, optionsPanel, 0, SpringLayout.EAST, view);
+		options = new OptionsInterface(1); // represents the top menu bar
+		optionsPanel.add(options.getMenuBar(), BorderLayout.CENTER);
+		// view-specific functionality
+		options.getNewCrossword().addActionListener(new NewCrosswordListener());
+		options.getSaveCrossword().addActionListener(new SaveCrosswordListener());
+		options.getLoadCrossword().addActionListener(new LoadCrosswordListener());
+		options.getExportTemplate().addActionListener(new ExportTemplateListener());
+		view.add(optionsPanel);
 		
 		// contains the crossword with the solution not displayed	
 		crosswordPanel = new JPanel();
-		springLayout.putConstraint(SpringLayout.NORTH, crosswordPanel, 25, SpringLayout.SOUTH, settingsMenuBar);
+		springLayout.putConstraint(SpringLayout.NORTH, crosswordPanel, 25, SpringLayout.SOUTH, optionsPanel);
 		springLayout.putConstraint(SpringLayout.WEST, crosswordPanel, 25, SpringLayout.WEST, view);
 		springLayout.putConstraint(SpringLayout.SOUTH, crosswordPanel, -26, SpringLayout.SOUTH, view);
 		springLayout.putConstraint(SpringLayout.EAST, crosswordPanel, -327, SpringLayout.EAST, view);
@@ -90,60 +98,25 @@ public class PlayerView {
 		crosswordPanel.add(crossword.getVisuals());
 		view.add(crosswordPanel);
 		
-		// contains options for editing the crossword
-		optionsPanel = new JPanel();
-		springLayout.putConstraint(SpringLayout.NORTH, optionsPanel, 25, SpringLayout.SOUTH, settingsMenuBar);
-		springLayout.putConstraint(SpringLayout.WEST, optionsPanel, 28, SpringLayout.EAST, crosswordPanel);
-		springLayout.putConstraint(SpringLayout.SOUTH, optionsPanel, -26, SpringLayout.SOUTH, view);
-		springLayout.putConstraint(SpringLayout.EAST, optionsPanel, -23, SpringLayout.EAST, view);
-		optionsPanel.setBackground(Color.decode("#F5F5F5"));
-		SpringLayout optionsLayout = new SpringLayout();
-		optionsPanel.setLayout(optionsLayout);
-		view.add(optionsPanel);
+		// contains controls for solving the crossword
+		controlsPanel = new JPanel();
+		springLayout.putConstraint(SpringLayout.NORTH, controlsPanel, 25, SpringLayout.SOUTH, optionsPanel);
+		springLayout.putConstraint(SpringLayout.WEST, controlsPanel, 28, SpringLayout.EAST, crosswordPanel);
+		springLayout.putConstraint(SpringLayout.SOUTH, controlsPanel, -26, SpringLayout.SOUTH, view);
+		springLayout.putConstraint(SpringLayout.EAST, controlsPanel, -23, SpringLayout.EAST, view);
+		controlsPanel.setBackground(Color.decode("#F5F5F5"));
+		SpringLayout controlsLayout = new SpringLayout();
+		controlsPanel.setLayout(controlsLayout);
+		view.add(controlsPanel);
 		
 		// contains the list of clues
 		cluePanel = new JPanel();
-		optionsLayout.putConstraint(SpringLayout.NORTH, cluePanel, 0, SpringLayout.NORTH, optionsPanel);
-		optionsLayout.putConstraint(SpringLayout.WEST, cluePanel, 0, SpringLayout.WEST, optionsPanel);
-		optionsLayout.putConstraint(SpringLayout.SOUTH, cluePanel, -85, SpringLayout.SOUTH, optionsPanel);
-		optionsLayout.putConstraint(SpringLayout.EAST, cluePanel, 0, SpringLayout.EAST, optionsPanel);
+		controlsLayout.putConstraint(SpringLayout.NORTH, cluePanel, 0, SpringLayout.NORTH, controlsPanel);
+		controlsLayout.putConstraint(SpringLayout.WEST, cluePanel, 0, SpringLayout.WEST, controlsPanel);
+		controlsLayout.putConstraint(SpringLayout.SOUTH, cluePanel, -85, SpringLayout.SOUTH, controlsPanel);
+		controlsLayout.putConstraint(SpringLayout.EAST, cluePanel, 0, SpringLayout.EAST, controlsPanel);
 		cluePanel.setLayout(new BorderLayout());
-		optionsPanel.add(cluePanel);
-		
-		// individual menu components
-		settingsMenuBar.add(new JLabel("    "));
-		fileMenu = new JMenu("File");
-		fileMenu.setFont(new Font(fileMenu.getFont().getName(), Font.PLAIN, 15));
-		settingsMenuBar.add(fileMenu);
-		settingsMenuBar.add(new JLabel(" "));
-		
-		// new crossword menu item
-		JMenuItem newCrossword = new JMenuItem("New Crossword");
-		newCrossword.setFont(new Font(newCrossword.getFont().getName(), Font.PLAIN, 15));
-		newCrossword.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				ready = true;
-			}
-		});
-		fileMenu.add(newCrossword);
-		
-		// exit program menu item
-		JMenuItem exitProgram = new JMenuItem("Exit");
-		exitProgram.setFont(new Font(exitProgram.getFont().getName(), Font.PLAIN, 15));
-		exitProgram.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				System.exit(0);
-			}
-		});
-		fileMenu.add(exitProgram);
-		
-		viewMenu = new JMenu("View");
-		viewMenu.setFont(new Font(viewMenu.getFont().getName(), Font.PLAIN, 15));
-		settingsMenuBar.add(viewMenu);
-		settingsMenuBar.add(new JLabel(" "));
-		helpMenu = new JMenu("Help");
-		helpMenu.setFont(new Font(helpMenu.getFont().getName(), Font.PLAIN, 15));
-		settingsMenuBar.add(helpMenu);
+		controlsPanel.add(cluePanel);
 		
 		// scroll pane for the list of clues
 		JScrollPane clueScrollPane = new JScrollPane();
@@ -177,46 +150,46 @@ public class PlayerView {
 		// check button
 		checkButton = new JButton("Check");
 		checkButton.addActionListener(new CheckButtonListener());
-		optionsLayout.putConstraint(SpringLayout.NORTH, checkButton, 10, SpringLayout.SOUTH, cluePanel);
-		optionsLayout.putConstraint(SpringLayout.WEST, checkButton, 0, SpringLayout.WEST, optionsPanel);
-		optionsLayout.putConstraint(SpringLayout.EAST, checkButton, -153, SpringLayout.EAST, optionsPanel);
-		optionsLayout.putConstraint(SpringLayout.SOUTH, checkButton, -42, SpringLayout.SOUTH, optionsPanel);
+		controlsLayout.putConstraint(SpringLayout.NORTH, checkButton, 10, SpringLayout.SOUTH, cluePanel);
+		controlsLayout.putConstraint(SpringLayout.WEST, checkButton, 0, SpringLayout.WEST, controlsPanel);
+		controlsLayout.putConstraint(SpringLayout.EAST, checkButton, -153, SpringLayout.EAST, controlsPanel);
+		controlsLayout.putConstraint(SpringLayout.SOUTH, checkButton, -42, SpringLayout.SOUTH, controlsPanel);
 		checkButton.setFont(new Font(checkButton.getFont().getName(), Font.PLAIN, 15));
 		checkButton.setFocusable(false);
-		optionsPanel.add(checkButton);
+		controlsPanel.add(checkButton);
 		
 		// check all button
 		checkAllButton = new JButton("Check All");
 		checkAllButton.addActionListener(new CheckAllButtonListener());
-		optionsLayout.putConstraint(SpringLayout.NORTH, checkAllButton, 10, SpringLayout.SOUTH, cluePanel);
-		optionsLayout.putConstraint(SpringLayout.WEST, checkAllButton, 121, SpringLayout.WEST, optionsPanel);
-		optionsLayout.putConstraint(SpringLayout.EAST, checkAllButton, 0, SpringLayout.EAST, optionsPanel);
-		optionsLayout.putConstraint(SpringLayout.SOUTH, checkAllButton, -42, SpringLayout.SOUTH, optionsPanel);
+		controlsLayout.putConstraint(SpringLayout.NORTH, checkAllButton, 10, SpringLayout.SOUTH, cluePanel);
+		controlsLayout.putConstraint(SpringLayout.WEST, checkAllButton, 121, SpringLayout.WEST, controlsPanel);
+		controlsLayout.putConstraint(SpringLayout.EAST, checkAllButton, 0, SpringLayout.EAST, controlsPanel);
+		controlsLayout.putConstraint(SpringLayout.SOUTH, checkAllButton, -42, SpringLayout.SOUTH, controlsPanel);
 		checkAllButton.setFont(new Font(checkAllButton.getFont().getName(), Font.PLAIN, 15));
 		checkAllButton.setFocusable(false);
-		optionsPanel.add(checkAllButton);
+		controlsPanel.add(checkAllButton);
 		
 		// cheat button
 		cheatButton = new JButton("Cheat");
 		cheatButton.addActionListener(new CheatButtonListener());
-		optionsLayout.putConstraint(SpringLayout.NORTH, cheatButton, 10, SpringLayout.SOUTH, checkButton);
-		optionsLayout.putConstraint(SpringLayout.WEST, cheatButton, 0, SpringLayout.WEST, optionsPanel);
-		optionsLayout.putConstraint(SpringLayout.EAST, cheatButton, -153, SpringLayout.EAST, optionsPanel);
-		optionsLayout.putConstraint(SpringLayout.SOUTH, cheatButton, 0, SpringLayout.SOUTH, optionsPanel);
+		controlsLayout.putConstraint(SpringLayout.NORTH, cheatButton, 10, SpringLayout.SOUTH, checkButton);
+		controlsLayout.putConstraint(SpringLayout.WEST, cheatButton, 0, SpringLayout.WEST, controlsPanel);
+		controlsLayout.putConstraint(SpringLayout.EAST, cheatButton, -153, SpringLayout.EAST, controlsPanel);
+		controlsLayout.putConstraint(SpringLayout.SOUTH, cheatButton, 0, SpringLayout.SOUTH, controlsPanel);
 		cheatButton.setFont(new Font(cheatButton.getFont().getName(), Font.PLAIN, 15));
 		cheatButton.setFocusable(false);
-		optionsPanel.add(cheatButton);
+		controlsPanel.add(cheatButton);
 		
 		// show solution button
 		solutionButton = new JButton("Solution");
 		solutionButton.addActionListener(new SolutionButtonListener());
-		optionsLayout.putConstraint(SpringLayout.NORTH, solutionButton, 10, SpringLayout.SOUTH, checkAllButton);
-		optionsLayout.putConstraint(SpringLayout.WEST, solutionButton, 121, SpringLayout.WEST, optionsPanel);
-		optionsLayout.putConstraint(SpringLayout.EAST, solutionButton, 0, SpringLayout.EAST, optionsPanel);
-		optionsLayout.putConstraint(SpringLayout.SOUTH, solutionButton, 0, SpringLayout.SOUTH, optionsPanel);
+		controlsLayout.putConstraint(SpringLayout.NORTH, solutionButton, 10, SpringLayout.SOUTH, checkAllButton);
+		controlsLayout.putConstraint(SpringLayout.WEST, solutionButton, 121, SpringLayout.WEST, controlsPanel);
+		controlsLayout.putConstraint(SpringLayout.EAST, solutionButton, 0, SpringLayout.EAST, controlsPanel);
+		controlsLayout.putConstraint(SpringLayout.SOUTH, solutionButton, 0, SpringLayout.SOUTH, controlsPanel);
 		solutionButton.setFont(new Font(solutionButton.getFont().getName(), Font.PLAIN, 15));
 		solutionButton.setFocusable(false);
-		optionsPanel.add(solutionButton);
+		controlsPanel.add(solutionButton);
 	}
 	
 	// provides tool tips for the elements in the list of clues
@@ -587,6 +560,41 @@ public class PlayerView {
 			if (selectedItem.charAt(i) == 'a' || selectedItem.charAt(i) == 'd') break;
 		}
 		return position;
+	}
+	
+	private class NewCrosswordListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			ready = true;
+		}	
+	}
+	
+	private class SaveCrosswordListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			// placeholder
+		}	
+	}
+	
+	private class LoadCrosswordListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			// just replace this line with code that builds a complete crossword from a text file:
+			crossword = new Crossword();
+			reloading = true;
+			ready = true;
+		}	
+	}
+	
+	private class ExportTemplateListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			// placeholder
+		}	
+	}
+	
+	public boolean isReloading() {
+		return reloading;
+	}
+	
+	public Crossword getCrossword() {
+		return crossword;
 	}
 
 }

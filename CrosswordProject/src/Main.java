@@ -42,13 +42,13 @@ public class Main {
 			displayLoadingBar();
 			
 			// display the main frame
-			if (!frame.isVisible()) {
+			if (!frame.isVisible()) { // executes only in the 1st cycle
 				frame.setLocationRelativeTo(null);
 				frame.setVisible(true);
 			}
 			
 			// complete the dictionary
-			if (masterDictionary == null) {
+			if (masterDictionary == null) { // executes only in the 1st cycle
 				masterDictionary = new MasterDictionary();
 				File file = new File("word.txt");				
 					try {
@@ -82,49 +82,54 @@ public class Main {
 			// get the data from the start view
 			grid = startView.getPreview().getGrid();
 			mode = startView.getMode();
-					
-			// loading phase
-			displayLoadingBar();
 			
-			boolean successfulCompilation = true;
+			// generate a new crossword or use a ready one
+			boolean successfulCompilation = true;			
+			if (startView.getLoadedCrossword() == null)
+				try {
+					// loading phase
+					displayLoadingBar();
+					// create a filler class and complete the grid using the fill() method
+					Filler filler = new Filler(grid, masterDictionary);
+					filler.fill(1, 0); // initiate the grid-filling algorithm			
+					crossword = new Crossword(filler.getGrid());
+				}
+				catch (Exception e) {
+					successfulCompilation = false;
+				}
+			else crossword = startView.getLoadedCrossword();
 			
-			try {
-				// create a filler class and complete the grid using the fill() method
-				Filler filler = new Filler(grid, masterDictionary);
-				filler.fill(1, 0); // initiate the grid-filling algorithm			
-				crossword = new Crossword(filler.getGrid());
-			}
-			catch (Exception e) {
-				successfulCompilation = false;
-			}
-			
-			if (successfulCompilation) {
-				// when the crossword is ready:
-				if (mode == 0) { // setter mode
-					frame.getContentPane().removeAll();
-					setterView = new SetterView(crossword); // set up
-					frame.getContentPane().add(setterView.getView());
-					frame.revalidate();
-					frame.repaint(); // display
-					while (!setterView.isReady()) { // 'New Crossword' is clicked
-						try {Thread.sleep(100);}
-						catch (InterruptedException e) {}
+			if (successfulCompilation) { // a crossword is ready
+				while (true) {
+					if (mode == 0) { // player mode
+						frame.getContentPane().removeAll();
+						playerView = new PlayerView(crossword); // set up
+						frame.getContentPane().add(playerView.getView());
+						frame.revalidate();
+						frame.repaint(); // display
+						while (!playerView.isReady()) { // 'New Crossword' is clicked
+							try {Thread.sleep(100);}
+							catch (InterruptedException e) {}
+						}	
+						if (playerView.isReloading()) crossword = playerView.getCrossword();
+						else break;
+					}
+					else { // setter mode
+						frame.getContentPane().removeAll();
+						setterView = new SetterView(crossword); // set up
+						frame.getContentPane().add(setterView.getView());
+						frame.revalidate();
+						frame.repaint(); // display
+						while (!setterView.isReady()) { // 'New Crossword' is clicked
+							try {Thread.sleep(100);}
+							catch (InterruptedException e) {}
+						}
+						if (setterView.isReloading()) crossword = setterView.getCrossword();
+						else break;
 					}
 				}
-				else { // player mode
-					frame.getContentPane().removeAll();
-					playerView = new PlayerView(crossword); // set up
-					frame.getContentPane().add(playerView.getView());
-					frame.revalidate();
-					frame.repaint(); // display
-					while (!playerView.isReady()) { // 'New Crossword' is clicked
-						try {Thread.sleep(100);}
-						catch (InterruptedException e) {}
-					}
-				}
 			}
-			// TODO else - panel with an error message + 'go back to start' button
-			
+			// TODO else - panel with an error message + 'go back to start' button	
 		}
 		
 	}
