@@ -1,3 +1,4 @@
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -11,7 +12,7 @@ public class Dictionary {
 	//
 
 	// initialise variables
-	ArrayList<Word> words; 
+	ArrayList<Word> words;
 	Dictionary next, prev;
 	int count;
 	int wordSize;
@@ -73,76 +74,79 @@ public class Dictionary {
 		this.words.add(w);
 		count++;
 	}
-	public void setupMatrices(){
-		File dict = new File("matrices"+this.getWordSize()+".txt");
-		int pos= this.getCount()-1;
-		try {
-			BufferedReader input = new BufferedReader(new FileReader(dict));
-			Word cursor=this.words.get(pos);
-			
-			while(pos>0){
-					int[][] index= new int[this.getWordSize()][26];
-				
-						for(int j=0;j<26;j++){
-							String s=input.readLine();
-							String val[]= s.split(" ");
-							for(int i=0;i<this.getWordSize();i++){
-								index[i][j]=Integer.parseInt(val[i]);
-							}
-						}
-					pos--;
-					cursor.setIndex(index);
-					cursor=words.get(pos);
 
+	public void setupMatrices() {
+		File m = new File("matrices" + this.getWordSize() + ".txt");
+		if (!m.exists()) {
+			CreateMatrices();
+		}
+		int pos = this.getCount();
+		try {
+			BufferedReader input = new BufferedReader(new FileReader(m));
+			Word cursor = null;
+
+			while (pos > 0) {
+				pos--;
+				int[][] index = new int[this.getWordSize()][26];
+
+				for (int j = 0; j < 26; j++) {
+					String s = input.readLine();
+					String val[] = s.split(" ");
+					for (int i = 0; i < this.getWordSize(); i++) {
+						index[i][j] = Integer.parseInt(val[i]);
+					}
+				}
+				cursor = words.get(pos);
+
+				cursor.setIndex(index);
 			}
 			input.close();
-		}  catch (IOException e) {
-			processMatrices();
+		} catch (IOException e) {
+		}
+	}
+
+	private void CreateMatrices() {
+		int pos = this.getCount();
+		Word cursor = null;
+		int[][] index = new int[this.getWordSize()][26];
+		// initialise all index values to avoid nulls
+		for (int i = 0; i < this.getWordSize(); i++) {
+			for (int j = 0; j < 26; j++) {
+				index[i][j] = 0;
+			}
+		}
+		try {
+			File m = new File("matrices" + this.getWordSize() + ".txt");
+			BufferedWriter output = new BufferedWriter(new FileWriter(m));
+
+			while (cursor != this.words.get(0)) {
+				
+				pos--;
+				cursor = this.words.get(pos);
+				
+				for (int j = 0; j < 26; j++) {
+					for (int i = 0; i < this.getWordSize(); i++) {
+						output.write(index[i][j] + " ");
+					}
+					output.write('\n');
+				}
+				for (int i = 0; i < this.getWordSize(); i++) {
+					int j = (cursor.getWord().charAt(i) - 'a');
+					index[i][j] = pos;
 				}
 			}
 
-	private void processMatrices(){
-		int location=getCount()-1;
-		Word cursor=this.words.get(location);
-		int pos=this.getCount()-1;
-		int[][] index= new int[this.getWordSize()][26];
-		//initialise all index values to avoid nulls
-		for(int i=0;i<this.getWordSize();i++){
-			for(int j=0;j<26;j++){
-				index[i][j]=0;
-			}
-		}	
-		 try {
-			 File dict = new File("matrices"+this.getWordSize()+".txt");
-	          BufferedWriter output = new BufferedWriter(new FileWriter(dict));
-	          
-	  		while(cursor!=this.words.get(0)){
-				for(int i=0;i<this.getWordSize();i++){
-					int j=(cursor.getWord().charAt(i)-'a');
-					index[i][j]=pos;
-				}
-				location--;
-				cursor=this.words.get(location);
-				pos--;
-			
-				for(int j=0;j<26;j++){
-					for(int i=0;i<this.getWordSize();i++){
-					      output.write(index[i][j]+" ");
-					}
-					  output.write('\n');
-				}
-	          }
-				
-	          output.close();
-	        } catch ( IOException e ) {
-	           System.out.print("Could not create file"+this.getWordSize());
-	        }
+			output.close();
+		} catch (IOException e) {
+			System.out.print("Could not create file" + this.getWordSize());
+		}
 	}
-		public Word getWord(int i){
-			if(i>=0&&i<words.size()){
-		return this.words.get(i);
-			}
-			return null;
+
+	public Word getWord(int i) {
+		if (i >= 0 && i < words.size()) {
+			return this.words.get(i);
+		}
+		return null;
 	}
 
 }

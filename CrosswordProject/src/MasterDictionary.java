@@ -1,3 +1,5 @@
+
+
 public class MasterDictionary {
 	// this class store all Dictionaries of of one size
 
@@ -91,25 +93,26 @@ public class MasterDictionary {
 
 	// get next word after w
 	public Word getFeasibleWord(String s,Word pre) {
-		int length=pre.Word.length();
-		Dictionary d=this.selectDictionary(length);
-		int pos =d.words.indexOf(pre);
-		Word w = d.getWord(pos+1);
+		Dictionary d=this.selectDictionary(s.length());
+		int start = d.words.indexOf(pre);
+		Word w = d.getWord(start+1);
 		int jump=-1;
 		boolean done=false;
 		
 		while(!done){
+			System.out.println(w.Word + jump);
 		for(int i=0;i<s.length();i++){
 			if((s.charAt(i)-'a')>=0&&(s.charAt(i)-'a')<26){
-				if(w.getIndex()[i][s.charAt(i)-'a']==0){
+				//check dictionary doesn't pass a point which is already checked
+				if((jump>-1&&jump<start)&&w.getIndex()[i][s.charAt(i)-'a']>start){
 				return null;
 				}
-				if(jump<(w.getIndex()[i][s.charAt(i)-'a'])){
+				if(w.getIndex()[i][s.charAt(i)-'a']==0||jump<(w.getIndex()[i][s.charAt(i)-'a'])){
 					jump=w.getIndex()[i][s.charAt(i)-'a'];
 				}
 			}
 		}
-		if(jump>0){
+		if(jump>=0){
 			w=this.selectDictionary(s.length()).getWord(jump);
 			}
 		if(matches(w.getWord(),s)){
