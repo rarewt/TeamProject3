@@ -1,4 +1,3 @@
-
 public class MasterDictionary {
 	// this class store all Dictionaries of of one size
 
@@ -8,12 +7,12 @@ public class MasterDictionary {
 	int minLength = 3;
 
 	boolean success = false; // for choose method (backtracking example)
-	
+
 	public MasterDictionary() {
 		count = 0;
 		Dictionary d;
 		// initialise first dictionary with size 2
-		for (int i =minLength; i <= maxLength; i++) {
+		for (int i = minLength; i <= maxLength; i++) {
 
 			d = new Dictionary(i);
 			addDictionary(d);
@@ -58,19 +57,18 @@ public class MasterDictionary {
 		count++;
 	}
 
-
 	public void process() {
-		Dictionary cursor=this.getHead();
-		while(cursor!=null){
+		Dictionary cursor = this.getHead();
+		while (cursor != null) {
 			cursor.setupMatrices();
-			cursor=cursor.getNext();
+			cursor = cursor.getNext();
 		}
 	}
-	
+
 	// add a new word into its relevant dictionary
-	public void addWord(String s) {
-		Dictionary d = selectDictionary(s.length());
-		Word w = new Word(s);
+	public void addWord(String wrd, String clu) {
+		Dictionary d = selectDictionary(wrd.length());
+		Word w = new Word(wrd, clu);
 		d.add(w);
 	}
 
@@ -86,49 +84,51 @@ public class MasterDictionary {
 	public Word getRandom(int length) {
 		Dictionary d = selectDictionary(length);
 		Word w;
-		w=d.getWord((int) (Math.random() * d.getCount()));
+		w = d.getWord((int) (Math.random() * d.getCount()));
 		return w;
 	}
 
 	// get next word after w
-	public Word getFeasibleWord(String s,Word pre) {
-		Dictionary d=this.selectDictionary(s.length());
+	public Word getFeasibleWord(String s, Word pre) {
+		Dictionary d = this.selectDictionary(s.length());
 		int stop = d.words.indexOf(pre);
-		int start = stop+1;
+		int start = stop + 1;
 		Word w = d.getWord(start);
-		int jump=-1;
-		boolean done=false;
-		//incase the search starts at the very end this avoids a null pointer
-		if(start==d.getCount()){
-			start=0;
-		}	
-		while(!done){	
-		for(int i=0;i<s.length();i++){
-			if((s.charAt(i)-'a')>=0&&(s.charAt(i)-'a')<26){
-				//check dictionary doesn't pass a point which is already checked
-				if((jump>-1&&jump<stop)&&w.getIndex()[i][s.charAt(i)-'a']>=stop){
-				return null;
-				}
-				if(w.getIndex()[i][s.charAt(i)-'a']==0||jump<(w.getIndex()[i][s.charAt(i)-'a'])){
-					jump=w.getIndex()[i][s.charAt(i)-'a'];
+		int jump = -1;
+		boolean done = false;
+		// incase the search starts at the very end this avoids a null pointer
+		if (start == d.getCount()) {
+			start = 0;
+		}
+		while (!done) {
+			for (int i = 0; i < s.length(); i++) {
+				if ((s.charAt(i) - 'a') >= 0 && (s.charAt(i) - 'a') < 26) {
+					// check dictionary doesn't pass a point which is already
+					// checked
+					if ((jump > -1 && jump < stop) && w.getIndex()[i][s.charAt(i) - 'a'] >= stop) {
+						return null;
+					}
+					if (w.getIndex()[i][s.charAt(i) - 'a'] == 0 || jump < (w.getIndex()[i][s.charAt(i) - 'a'])) {
+						jump = w.getIndex()[i][s.charAt(i) - 'a'];
+					}
 				}
 			}
-		}
-		if(jump>=0){
-			w=this.selectDictionary(s.length()).getWord(jump);
+			if (jump >= 0) {
+				w = this.selectDictionary(s.length()).getWord(jump);
 			}
-		if(matches(w.getWord(),s)){
-			done=true;
-		}
+			if (matches(w.getWord(), s)) {
+				done = true;
+			}
 		}
 		return w;
 	}
-	
+
 	private boolean matches(String word, String pattern) {
-		if(word.length() != pattern.length()) return false;
+		if (word.length() != pattern.length())
+			return false;
 		else {
-			for(int i = 0; i < word.length(); ++i) {
-				if(pattern.charAt(i) != '-' && pattern.charAt(i) != word.charAt(i))
+			for (int i = 0; i < word.length(); ++i) {
+				if (pattern.charAt(i) != '-' && pattern.charAt(i) != word.charAt(i))
 					return false;
 			}
 		}
@@ -143,4 +143,5 @@ public class MasterDictionary {
 		}
 		return d;
 	}
+	
 }

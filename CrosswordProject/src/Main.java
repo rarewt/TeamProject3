@@ -50,13 +50,15 @@ public class Main {
 			// complete the dictionary
 			if (masterDictionary == null) { // executes only in the 1st cycle
 				masterDictionary = new MasterDictionary();
-				File file = new File("word.txt");				
+				File file = new File("wordclues.txt");				
 					try {
 						Scanner input = new Scanner(file);
 						while (input.hasNextLine()) {
-							String s = input.nextLine();
-							if (s.length() < 16 && s.length()>2) {
-								masterDictionary.addWord(s);
+							String wrd = input.nextLine().toLowerCase();
+							String clu = input.nextLine();
+							input.nextLine();
+							if (wrd.length() < 16 && wrd.length()>2) {
+								masterDictionary.addWord(wrd, clu);
 							}
 						}
 						input.close();
@@ -92,7 +94,7 @@ public class Main {
 					// create a filler class and complete the grid using the fill() method
 					Filler filler = new Filler(grid, masterDictionary);
 					filler.fill(1, 0); // initiate the grid-filling algorithm			
-					crossword = new Crossword(filler.getGrid());
+					crossword = new Crossword(filler.getGrid(), masterDictionary);
 				}
 				catch (Exception e) {
 					successfulCompilation = false;

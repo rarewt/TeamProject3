@@ -45,7 +45,7 @@ public class Crossword {
 	}
 	
 	// final constructor
-	public Crossword(Square[][] selectedGrid){
+	public Crossword(Square[][] selectedGrid, MasterDictionary masterDictionary){
 		grid = selectedGrid;
 		size = grid.length;
 		
@@ -69,14 +69,14 @@ public class Crossword {
 		for (int y=0; y < size; y++)
 			for (int x=0; x < size; x++)
 				if (grid[x][y].startsAcrossWord()) {
-					String[] wordData = {findAcrossWord(x, y), "Placeholder"};
+					String[] wordData = {findAcrossWord(x, y), masterDictionary.selectDictionary(findAcrossWord(x, y).length()).getClue(findAcrossWord(x, y))};
 					across.put(Integer.parseInt(grid[x][y].getNote().getText()), wordData);
 				}
 		down = new HashMap<Integer, String[]>();
 		for (int x=0; x < size; x++)
 			for (int y=0; y < size; y++)
 				if (grid[x][y].startsDownWord()) {
-					String[] wordData = {findDownWord(x, y), "Placeholder"};
+					String[] wordData = {findDownWord(x, y), masterDictionary.selectDictionary(findDownWord(x, y).length()).getClue(findDownWord(x, y))};
 					down.put(Integer.parseInt(grid[x][y].getNote().getText()), wordData);
 				}
 	}	
@@ -195,5 +195,7 @@ public class Crossword {
 		}
 		return word;
 	}
+	
+	
 	
 }

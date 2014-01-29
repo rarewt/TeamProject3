@@ -1,4 +1,3 @@
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -120,10 +119,10 @@ public class Dictionary {
 			BufferedWriter output = new BufferedWriter(new FileWriter(m));
 
 			while (cursor != this.words.get(0)) {
-				
+
 				pos--;
 				cursor = this.words.get(pos);
-				
+
 				for (int j = 0; j < 26; j++) {
 					for (int i = 0; i < this.getWordSize(); i++) {
 						output.write(index[i][j] + " ");
@@ -146,6 +145,14 @@ public class Dictionary {
 		if (i >= 0 && i < words.size()) {
 			return this.words.get(i);
 		}
+		return null;
+	}
+
+	//find word in dictionary to get appropriate clue
+	public String getClue(String word) {
+		for (int i = 0; i < words.size(); ++i)
+			if (word.equals(words.get(i).getWord()))
+				return words.get(i).getClue();
 		return null;
 	}
 
