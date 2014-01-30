@@ -105,7 +105,7 @@ public class MasterDictionary {
 				if ((s.charAt(i) - 'a') >= 0 && (s.charAt(i) - 'a') < 26) {
 					// check dictionary doesn't pass a point which is already
 					// checked
-					if ((jump > -1 && jump < stop) && w.getIndex()[i][s.charAt(i) - 'a'] >= stop) {
+					if ((jump > -1 && jump < stop) && w.getIndex()[i][s.charAt(i) - 'a'] >= stop|| w.getIndex()[i][s.charAt(i) - 'a']==0) {
 						return null;
 					}
 					if (w.getIndex()[i][s.charAt(i) - 'a'] == 0 || jump < (w.getIndex()[i][s.charAt(i) - 'a'])) {
