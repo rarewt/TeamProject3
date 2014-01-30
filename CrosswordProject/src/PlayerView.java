@@ -130,11 +130,11 @@ public class PlayerView {
 			ArrayList<String> list = new ArrayList<String>();
 			list.add("<html><b>Across</b></html>");
 			for (int i = 0; i < across.length; i++)
-				list.add(across[i] + "a. " + crossword.getAcross().get(across[i])[1] +
+				list.add(across[i] + "a." + crossword.getAcross().get(across[i])[1] +
 						 " (" + crossword.getAcross().get(across[i])[0].length() + ")");
 			list.add("<html><b>Down</b></html>");
 			for (int i = 0; i < down.length; i++)
-				list.add(down[i] + "d. " + crossword.getDown().get(down[i])[1] +
+				list.add(down[i] + "d." + crossword.getDown().get(down[i])[1] +
 						 " (" + crossword.getDown().get(down[i])[0].length() + ")");
 			clueList = new JList(list.toArray());
 		}
@@ -211,35 +211,43 @@ public class PlayerView {
 	
     private class CheckButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
+			crosswordPanel.setVisible(false);
 			for (int y = 0; y < crossword.getSize(); y++)
 				for (int x = 0; x < crossword.getSize(); x++)
 					if (crossword.getGrid()[x][y].isMarked())
 						crossword.getGrid()[x][y].check();
+			crosswordPanel.setVisible(true);
 		}
     }
     
     private class CheckAllButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
+			crosswordPanel.setVisible(false);
 			for (int y = 0; y < crossword.getSize(); y++)
 				for (int x = 0; x < crossword.getSize(); x++)
 					crossword.getGrid()[x][y].check();
+			crosswordPanel.setVisible(true);
 		}
     }
     
     private class CheatButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
+			crosswordPanel.setVisible(false);
 			for (int y = 0; y < crossword.getSize(); y++)
 				for (int x = 0; x < crossword.getSize(); x++)
 					if (crossword.getGrid()[x][y].isMarked())
 						crossword.getGrid()[x][y].solve();
+			crosswordPanel.setVisible(true);
 		}
     }
      	
     private class SolutionButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
+			crosswordPanel.setVisible(false);
 			for (int y = 0; y < crossword.getSize(); y++)
 				for (int x = 0; x < crossword.getSize(); x++)
 					crossword.getGrid()[x][y].solve();
+			crosswordPanel.setVisible(true);
 		}
     }
 	
@@ -499,7 +507,8 @@ public class PlayerView {
 	// utility methods
 	
 	// recolors the grid
-	private void recolor() {	
+	private void recolor() {
+		crosswordPanel.setVisible(false);
 		for (int y = 0; y < crossword.getSize(); y++)
 			for (int x = 0; x < crossword.getSize(); x++) {
 				// fix the borders
@@ -529,6 +538,7 @@ public class PlayerView {
 				// color the black squares
 				else crossword.getGrid()[x][y].getPanel().setBackground(Color.BLACK);
 			}
+		crosswordPanel.setVisible(true);
 	}
 	
 	public JPanel getView() {

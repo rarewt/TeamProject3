@@ -145,11 +145,11 @@ public class SetterView {
 			ArrayList<String> list = new ArrayList<String>();
 			list.add("<html><b>Across</b></html>");
 			for (int i = 0; i < across.length; i++)
-				list.add(across[i] + "a. " + crossword.getAcross().get(across[i])[1] +
+				list.add(across[i] + "a." + crossword.getAcross().get(across[i])[1] +
 						 " (" + crossword.getAcross().get(across[i])[0].length() + ")");
 			list.add("<html><b>Down</b></html>");
 			for (int i = 0; i < down.length; i++)
-				list.add(down[i] + "d. " + crossword.getDown().get(down[i])[1] +
+				list.add(down[i] + "d." + crossword.getDown().get(down[i])[1] +
 						 " (" + crossword.getDown().get(down[i])[0].length() + ")");
 			clueList = new JList(list.toArray());
 		}
@@ -317,7 +317,9 @@ public class SetterView {
     
     private class ConfirmButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
-			placeEdit();
+			crosswordPanel.setVisible(false);
+			placeEdit(); // modify the word in the crossword
+			crosswordPanel.setVisible(true);
 		}	
     }
     
@@ -329,6 +331,7 @@ public class SetterView {
     
     private class ResetButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
+			crosswordPanel.setVisible(false);
 			inputPopup.hidePopup(); // hide the pop up
 			for (int y = 0; y < crossword.getSize(); y++)
 				for (int x = 0; x < crossword.getSize(); x++) {
@@ -340,6 +343,7 @@ public class SetterView {
 			clueList.setModel(originalListModel);
 			selectedClue = "";
 			recolor();
+			crosswordPanel.setVisible(true);
 		}
     }
     
@@ -544,7 +548,8 @@ public class SetterView {
 	// utility methods
 	
 	// recolors the grid
-	private void recolor() {	
+	private void recolor() {
+		crosswordPanel.setVisible(false);
 		for (int y = 0; y < crossword.getSize(); y++)
 			for (int x = 0; x < crossword.getSize(); x++) {
 				// color the marked squares
@@ -563,6 +568,7 @@ public class SetterView {
 				// color the black squares
 				else crossword.getGrid()[x][y].getPanel().setBackground(Color.BLACK);
 			}
+		crosswordPanel.setVisible(true);
 	}
 	
 	public void placeEdit() {
