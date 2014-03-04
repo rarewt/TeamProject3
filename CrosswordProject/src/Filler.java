@@ -146,15 +146,15 @@ public class Filler {
 	}
 
 	private void applyAcrossWord(int i) {
+		ArrayList<String> wordsTried=new ArrayList<String>();
 		String pattern = findAcrossWord(i);
-		Word word = dict.getRandom(pattern.length());
-
+		Word word = dict.getFeasibleWord(pattern, dict.getRandom(pattern.length()));
+		System.out.println(pattern);
 		while (!success && word != null) {
 
 			if (matches(word.getWord(), pattern) && !contains(exists, word.getWord())) {
 				putAcrossWord(i, word.getWord());
 				exists.add(word.getWord());
-
 				if (i == total)
 					success = true;
 				else
@@ -162,22 +162,28 @@ public class Filler {
 			}
 			if (!success) {
 				putAcrossWord(i, pattern);
-				exists.remove(word);
-
+				if(exists.contains(word.getWord())){
+				exists.remove(word.getWord());}
+				wordsTried.add(word.getWord());
 			}
 			word = dict.getFeasibleWord(pattern, word);
+			if(wordsTried.contains(word.getWord())){
+				word=null;
+			}
 		}
 	}
 
 	private void applyDownWord(int i) {
+		ArrayList<String> wordsTried=new ArrayList<String>();
 		String pattern = findDownWord(i);
-		Word word = dict.getRandom(pattern.length());
+		Word word = dict.getFeasibleWord(pattern, dict.getRandom(pattern.length()));
+		System.out.println(pattern);
+
 		while (!success && word != null) {
 
 			if (matches(word.getWord(), pattern) && !contains(exists, word.getWord())) {
 				putDownWord(i, word.getWord());
 				exists.add(word.getWord());
-
 				if (i == total)
 					success = true;
 				else
@@ -185,10 +191,14 @@ public class Filler {
 			}
 			if (!success) {
 				putDownWord(i, pattern);
-				exists.remove(word);
-
+				if(exists.contains(word.getWord())){
+				exists.remove(word.getWord());}
+				wordsTried.add(word.getWord());
 			}
 			word = dict.getFeasibleWord(pattern, word);
+			if(wordsTried.contains(word.getWord())){
+				word=null;
+			}
 		}
 
 	}

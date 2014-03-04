@@ -91,35 +91,55 @@ public class MasterDictionary {
 	// get next word after w
 	public Word getFeasibleWord(String s, Word pre) {
 		Dictionary d = this.selectDictionary(s.length());
-		int stop = d.words.indexOf(pre);
-		int start = stop + 1;
-		Word w = d.getWord(start);
+		int start = d.words.indexOf(pre) + 1;
 		int jump = -1;
+		int first = -1;
+		boolean looped = false;
 		boolean done = false;
 		// incase the search starts at the very end this avoids a null pointer
 		if (start == d.getCount()) {
 			start = 0;
 		}
+		Word w = d.getWord(start);
+		Word test=w;
 		while (!done) {
+			if(first>=1)
+			System.out.println(d.words.get(first).Word+" "+test.getWord()+" "+w.getWord() +" "+ jump + " " + first);
+
+			// for every letter
 			for (int i = 0; i < s.length(); i++) {
+				// ensures valid characters are used
 				if ((s.charAt(i) - 'a') >= 0 && (s.charAt(i) - 'a') < 26) {
-					// check dictionary doesn't pass a point which is already
-					// checked
-					if ((jump > -1 && jump < stop) && w.getIndex()[i][s.charAt(i) - 'a'] >= stop|| w.getIndex()[i][s.charAt(i) - 'a']==0) {
-						return null;
-					}
-					if (w.getIndex()[i][s.charAt(i) - 'a'] == 0 || jump < (w.getIndex()[i][s.charAt(i) - 'a'])) {
+					// if loops round to zero or jump is less than next index
+					// address
+
+					if (w.getIndex()[i][s.charAt(i) - 'a'] == 0
+							|| jump < (w.getIndex()[i][s.charAt(i) - 'a'])) {
 						jump = w.getIndex()[i][s.charAt(i) - 'a'];
+
 					}
 				}
 			}
-			if (jump >= 0) {
+			// get next word
+			// System.out.println(w.getWord());
+			if (jump > -1) {
 				w = this.selectDictionary(s.length()).getWord(jump);
+				if (first == -1) {
+					first = jump;
+				} else if (looped && (jump >= first||jump==0)) {
+					return null;
+				}
+				if (jump == 0)
+					looped = true;
 			}
+			// check if word fits pattern
 			if (matches(w.getWord(), s)) {
 				done = true;
 			}
 		}
+		// return word
+		System.out.println();
+		System.out.println();
 		return w;
 	}
 
@@ -128,7 +148,8 @@ public class MasterDictionary {
 			return false;
 		else {
 			for (int i = 0; i < word.length(); ++i) {
-				if (pattern.charAt(i) != '-' && pattern.charAt(i) != word.charAt(i))
+				if (pattern.charAt(i) != '-'
+						&& pattern.charAt(i) != word.charAt(i))
 					return false;
 			}
 		}
@@ -143,5 +164,5 @@ public class MasterDictionary {
 		}
 		return d;
 	}
-	
+
 }
