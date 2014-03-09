@@ -33,6 +33,7 @@ public class PlayerView {
 
 	private JPanel view, crosswordPanel, controlsPanel, cluePanel, optionsPanel;
 	private JList clueList;
+	ArrayList<String> list;
 	private JButton checkButton, checkAllButton, cheatButton, solutionButton;
 	private Crossword crossword;
 	private String selectedClue;
@@ -86,6 +87,7 @@ public class PlayerView {
 		options.getSaveCrossword().addActionListener(new SaveCrosswordListener());
 		options.getLoadCrossword().addActionListener(new LoadCrosswordListener());
 		options.getExportTemplate().addActionListener(new ExportTemplateListener());
+		options.getExportPdfTemplate().addActionListener(new exportPdfListener());
 		view.add(optionsPanel);
 		
 		// contains the crossword with the solution not displayed	
@@ -127,7 +129,7 @@ public class PlayerView {
 			Object[] across = crossword.getAcross().keySet().toArray();
 			Object[] down = crossword.getDown().keySet().toArray();
 			Arrays.sort(across); Arrays.sort(down);
-			ArrayList<String> list = new ArrayList<String>();
+			list = new ArrayList<String>();
 			list.add("<html><b>Across</b></html>");
 			for (int i = 0; i < across.length; i++)
 				list.add(across[i] + "a. " + crossword.getAcross().get(across[i])[1] +
@@ -597,6 +599,12 @@ public class PlayerView {
 		public void actionPerformed(ActionEvent e) {
 			// placeholder
 		}	
+	}
+	
+	public class exportPdfListener implements ActionListener {
+		public void actionPerformed(ActionEvent e){
+			FilePDF pdf = new FilePDF(crossword, list);
+		}
 	}
 	
 	public boolean isReloading() {

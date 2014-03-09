@@ -14,7 +14,7 @@ public class OptionsInterface {
 	private JMenuBar menuBar;
 	private JMenu optionsMenu, helpMenu;
 	private JMenuItem newCrossword, exitProgram, loadCrossword, saveCrossword,
-					  importTemplate, exportTemplate, openGuide, openAbout;
+					  importTemplate, exportTemplate, exportPdfTemplate, openGuide, openAbout;
 	
 	public OptionsInterface(int mode) { // 0 for startup; anything else for player/setter
 		// main container
@@ -53,6 +53,11 @@ public class OptionsInterface {
 		importTemplate.setFont(new Font(importTemplate.getFont().getName(), Font.PLAIN, 15));
 		optionsMenu.add(importTemplate);
 		
+		// 'Options > Export as PDF' menu item
+		exportPdfTemplate = new JMenuItem("Export as PDF");
+		exportPdfTemplate.setFont(new Font(exportPdfTemplate.getFont().getName(), Font.PLAIN, 15));
+		optionsMenu.add(exportPdfTemplate);
+		
 		// 'Options > Exit' menu item
 		exitProgram = new JMenuItem("Exit");
 		exitProgram.addActionListener(new ExitListener());
@@ -80,6 +85,7 @@ public class OptionsInterface {
 			// those are disabled in the startup view
 			newCrossword.setEnabled(false);
 			saveCrossword.setEnabled(false);
+			exportPdfTemplate.setEnabled(false);
 		}
 		else {
 			// those are disabled in the player/setter view
@@ -113,6 +119,10 @@ public class OptionsInterface {
 
 	public JMenuItem getExportTemplate() {
 		return exportTemplate;
+	}
+	
+	public JMenuItem getExportPdfTemplate(){
+		return exportPdfTemplate;
 	}
 
 	public JMenuItem getOpenGuide() {
