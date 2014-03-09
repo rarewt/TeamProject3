@@ -25,7 +25,8 @@ public class FilePDF {
 	
 	private ArrayList<String> clueList;
 	private Crossword crossword;
-	private static String FILE = "crossword.pdf";
+	private static String path = System.getProperty("user.dir");
+	private static String FILE = path + "\\Crossword.pdf";
 	 private static Font catFont = new Font(Font.FontFamily.TIMES_ROMAN, 18,
 	      Font.BOLD);
 	private static Font subFont = new Font(Font.FontFamily.TIMES_ROMAN, 16,
