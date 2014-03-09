@@ -209,13 +209,6 @@ public class Filler {
 		return grid;
 	}
 	
-	public boolean isSuccessful() {
-		for (int y = 0; y < grid.length; y++)
-			for (int x = 0; x < grid.length; x++)
-				if (grid[x][y].getLetter() == '-' && grid[x][y].getOriginalColor() == 0) return false;
-		return true;
-	}
-	
 	public boolean emptyGrid() {
 		for (int y = 0; y < grid.length; y++)
 			for (int x = 0; x < grid.length; x++)

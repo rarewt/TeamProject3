@@ -28,7 +28,6 @@ public class Main {
 	private static SetterView setterView;
 	private static PlayerView playerView;
 	private static MasterDictionary masterDictionary;
-	private static int attempts = 100;
 	private static boolean cancelled;
 
 	public static void main(String[] args) {
@@ -99,34 +98,13 @@ public class Main {
 			if (startView.getLoadedCrossword() == null) {
 				// loading phase
 				displayLoadingBar(1);
-				// attempt to fill the grid a certain number of times
-				boolean successfulCompilation = false;
-				for (int i = 0; i < attempts; i++) {
+				// attempt to fill the grid
+				for (int i = 0; i < 1; i++) {
 					if (cancelled == true) break;
-					// create a filler class and complete the grid using the fill() method
 					filler = new Filler(grid, masterDictionary);
-					try {
-						filler.fill(1, 0);
-					}
-					catch (Exception e) {
-						filler.resetGrid();
-						continue;
-					}
-					if (filler.isSuccessful()) {
-						successfulCompilation = true;
-						break;
-					}
-					filler.resetGrid();
-				}
-				// if all of the attempts were unsuccessful - fill the grid up to wherever is possible
-				if (!successfulCompilation) {
-					for (int i = 0; i < 1; i++) {
-						if (cancelled == true) break;
-						filler = new Filler(grid, masterDictionary);
-						try {filler.fill(1, 0);}
-						catch (Exception e) {i--; filler.resetGrid(); continue;}
-						if (filler.emptyGrid()) {i--; continue;}
-					}
+					try {filler.fill(1, 0);}
+					catch (Exception e) {i--; filler.resetGrid(); continue;}
+					if (filler.emptyGrid()) {i--; continue;}
 				}
 				// use the grid to generate a crossword
 				crossword = new Crossword(filler.getGrid(), masterDictionary);
@@ -172,7 +150,7 @@ public class Main {
 	private static void displayLoadingBar(int cancellable) {
 		JPanel loadingPanel = new JPanel(new GridBagLayout());
 		loadingPanel.setBackground(Color.decode("#F5F5F5"));
-		JProgressBar loadingBar = new JProgressBar();
+		final JProgressBar loadingBar = new JProgressBar();
 		loadingBar.setIndeterminate(true);
 		loadingBar.setStringPainted(true);
 		if (cancellable != 1) loadingBar.setString("Loading Templates");
@@ -185,6 +163,7 @@ public class Main {
 				public void mouseEntered(MouseEvent arg0) {}
 				public void mouseExited(MouseEvent arg0) {}
 				public void mousePressed(MouseEvent arg0) {
+					loadingBar.setString("Cancelling");
 					cancelled = true;
 				}
 				public void mouseReleased(MouseEvent arg0) {}
