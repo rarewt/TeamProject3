@@ -130,11 +130,11 @@ public class PlayerView {
 			ArrayList<String> list = new ArrayList<String>();
 			list.add("<html><b>Across</b></html>");
 			for (int i = 0; i < across.length; i++)
-				list.add(across[i] + "a." + crossword.getAcross().get(across[i])[1] +
+				list.add(across[i] + "a. " + crossword.getAcross().get(across[i])[1] +
 						 " (" + crossword.getAcross().get(across[i])[0].length() + ")");
 			list.add("<html><b>Down</b></html>");
 			for (int i = 0; i < down.length; i++)
-				list.add(down[i] + "d." + crossword.getDown().get(down[i])[1] +
+				list.add(down[i] + "d. " + crossword.getDown().get(down[i])[1] +
 						 " (" + crossword.getDown().get(down[i])[0].length() + ")");
 			clueList = new JList(list.toArray());
 		}

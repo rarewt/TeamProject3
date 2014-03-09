@@ -78,6 +78,36 @@ public class Crossword {
 					String[] wordData = {findDownWord(x, y), masterDictionary.selectDictionary(findDownWord(x, y).length()).getClue(findDownWord(x, y))};
 					down.put(Integer.parseInt(grid[x][y].getNote().getText()), wordData);
 				}
+		
+		// improve the appearance of the clues
+		for (String[] value : across.values()) {
+			String str = "";
+			boolean copyChar = false;
+			for (int i = 0; i < value[1].length(); i++) {
+				if (str.endsWith(".")) break;
+				if (value[1].charAt(i) == ')') {copyChar = true; continue;}
+				if (value[1].charAt(i) == ';') break;
+				if (copyChar) str += value[1].charAt(i);
+			}
+			if (!str.endsWith(".")) str += ".";
+			str = str.substring(1);
+			str = str.substring(0, 1).toUpperCase() + str.substring(1);
+			value[1] = str;
+		}
+		for (String[] value : down.values()) {
+			String str = "";
+			boolean copyChar = false;
+			for (int i = 0; i < value[1].length(); i++) {
+				if (str.endsWith(".")) break;
+				if (value[1].charAt(i) == ')') {copyChar = true; continue;}
+				if (value[1].charAt(i) == ';') break;
+				if (copyChar) str += value[1].charAt(i);
+			}
+			if (!str.endsWith(".")) str += ".";
+			str = str.substring(1);
+			str = str.substring(0, 1).toUpperCase() + str.substring(1);
+			value[1] = str;
+		}
 	}	
 	
 	// the no argument constructor creates a test 5x5 crossword in the format
