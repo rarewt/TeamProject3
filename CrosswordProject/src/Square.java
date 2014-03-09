@@ -152,4 +152,9 @@ public class Square {
 		originalColor = 1;
 	}
 	
+	public void makeBlack() {
+		panel.setBackground(Color.BLACK);
+		originalColor = 1;
+	}
+	
 }

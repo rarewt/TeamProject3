@@ -59,6 +59,8 @@ public class Crossword {
 			for (int x=0; x < size; x++) {
 				for (MouseListener ml : grid[x][y].getPanel().getMouseListeners())
 					grid[x][y].getPanel().removeMouseListener(ml); // remove the old mouse listeners
+				if (grid[x][y].getOriginalColor() == 0 && grid[x][y].getLetter() == '-')
+					grid[x][y].makeBlack(); // self-fixing
 				visuals.add(grid[x][y].getPanel());
 			}
 		}
