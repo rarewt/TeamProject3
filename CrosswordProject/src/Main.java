@@ -2,10 +2,15 @@ import java.awt.Font;
 import java.awt.Color;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -17,11 +22,14 @@ public class Main {
 	private static Square[][] grid;
 	private static JFrame frame;
 	private static int mode;
+	private static Filler filler;
 	private static Crossword crossword;
 	private static StartView startView;
 	private static SetterView setterView;
 	private static PlayerView playerView;
 	private static MasterDictionary masterDictionary;
+	private static int attempts = 100;
+	private static boolean cancelled;
 
 	public static void main(String[] args) {
 		
@@ -37,9 +45,11 @@ public class Main {
 		frame.setSize(800, 560);
 
 		while (true) {
+			
+			cancelled = false;
 		
 			// loading phase
-			displayLoadingBar();
+			displayLoadingBar(0);
 			
 			// display the main frame
 			if (!frame.isVisible()) { // executes only in the 1st cycle
@@ -86,22 +96,44 @@ public class Main {
 			mode = startView.getMode();
 			
 			// generate a new crossword or use a ready one
-			boolean successfulCompilation = true;			
-			if (startView.getLoadedCrossword() == null)
-				try {
-					// loading phase
-					displayLoadingBar();
+			if (startView.getLoadedCrossword() == null) {
+				// loading phase
+				displayLoadingBar(1);
+				// attempt to fill the grid a certain number of times
+				boolean successfulCompilation = false;
+				for (int i = 0; i < attempts; i++) {
+					if (cancelled == true) break;
 					// create a filler class and complete the grid using the fill() method
-					Filler filler = new Filler(grid, masterDictionary);
-					filler.fill(1, 0); // initiate the grid-filling algorithm			
-					crossword = new Crossword(filler.getGrid(), masterDictionary);
+					filler = new Filler(grid, masterDictionary);
+					try {
+						filler.fill(1, 0);
+					}
+					catch (Exception e) {
+						filler.resetGrid();
+						continue;
+					}
+					if (filler.isSuccessful()) {
+						successfulCompilation = true;
+						break;
+					}
+					filler.resetGrid();
 				}
-				catch (Exception e) {
-					successfulCompilation = false;
+				// if all of the attempts were unsuccessful - fill the grid up to wherever is possible
+				if (!successfulCompilation) {
+					for (int i = 0; i < 1; i++) {
+						if (cancelled == true) break;
+						filler = new Filler(grid, masterDictionary);
+						try {filler.fill(1, 0);}
+						catch (Exception e) {i--; filler.resetGrid(); continue;}
+						if (filler.emptyGrid()) {i--; continue;}
+					}
 				}
+				// use the grid to generate a crossword
+				crossword = new Crossword(filler.getGrid(), masterDictionary);
+			}
 			else crossword = startView.getLoadedCrossword();
 			
-			if (successfulCompilation) { // a crossword is ready
+			if (!cancelled) {
 				while (true) {
 					if (mode == 0) { // player mode
 						frame.getContentPane().removeAll();
@@ -131,21 +163,33 @@ public class Main {
 					}
 				}
 			}
-			// TODO else - panel with an error message + 'go back to start' button	
+			
 		}
 		
 	}
 	
 	// shows a loading bar
-	private static void displayLoadingBar() {
+	private static void displayLoadingBar(int cancellable) {
 		JPanel loadingPanel = new JPanel(new GridBagLayout());
 		loadingPanel.setBackground(Color.decode("#F5F5F5"));
 		JProgressBar loadingBar = new JProgressBar();
 		loadingBar.setIndeterminate(true);
 		loadingBar.setStringPainted(true);
-		loadingBar.setString("Loading");
+		if (cancellable != 1) loadingBar.setString("Loading Templates");
+		else loadingBar.setString("Compiling (click to cancel)");
 		loadingBar.setFont(new Font(loadingBar.getFont().getName(), Font.BOLD, 16));
 		loadingPanel.add(loadingBar, new GridBagConstraints());
+		if (cancellable == 1) {
+			loadingPanel.addMouseListener(new MouseListener() {
+				public void mouseClicked(MouseEvent arg0) {}
+				public void mouseEntered(MouseEvent arg0) {}
+				public void mouseExited(MouseEvent arg0) {}
+				public void mousePressed(MouseEvent arg0) {
+					cancelled = true;
+				}
+				public void mouseReleased(MouseEvent arg0) {}
+	        });
+		}
 		frame.getContentPane().removeAll();
 		frame.getContentPane().add(loadingPanel);
 		frame.revalidate();

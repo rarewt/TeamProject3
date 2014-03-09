@@ -17,6 +17,7 @@ public class Square {
 	private boolean selected; // shows whether this square is selected in Setter/Player mode
 	private boolean marked; // shows whether this square is marked in Setter/Player mode
 	private int size; // references the size of the grid formed by similar squares
+	private int originalColor; // 0 for white and 1 for black
 	
 	public Square(int n) {
 		acrossWord = false;
@@ -137,6 +138,18 @@ public class Square {
 			if (panel.getBackground() == Color.WHITE) return "" + letter;
 			else return "#";
 		}
+	}
+	
+	public int getOriginalColor() {
+		return originalColor;
+	}
+	
+	public void assignOriginalColor() {
+		if (panel.getBackground() == Color.WHITE) {
+			originalColor = 0;
+			return;
+		}
+		originalColor = 1;
 	}
 	
 }

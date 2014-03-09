@@ -51,7 +51,7 @@ public class PlayerView {
 		for (int y = 0; y < crossword.getSize(); y++)
 			for (int x = 0; x < crossword.getSize(); x++) {
 				crossword.getGrid()[x][y].getPanel().addMouseListener(new MouseSelectionListener());
-				if (crossword.getGrid()[x][y].getLetter() == '-')
+				if (crossword.getGrid()[x][y].getOriginalColor() == 1)
 					crossword.getGrid()[x][y].getDisplayed().setForeground(Color.BLACK);
 			}
 		view.addMouseListener(new MouseDeselectionListener());
@@ -530,7 +530,7 @@ public class PlayerView {
 					crossword.getGrid()[x][y].fixNote();
 				}
 				// color the white squares
-				else if (crossword.getGrid()[x][y].getLetter() != '-') {
+				else if (crossword.getGrid()[x][y].getOriginalColor() != 1) {
 					crossword.getGrid()[x][y].getPanel().setBackground(Color.WHITE);
 					crossword.getGrid()[x][y].getDisplayed().setForeground(Color.BLACK);
 					crossword.getGrid()[x][y].getNote().setForeground(Color.BLACK);
@@ -555,10 +555,10 @@ public class PlayerView {
 		boolean right = false;
 		boolean up = false;
 		boolean down = false;
-		if (x > 0) if (crossword.getGrid()[x-1][y].getLetter() != '-') left = true;
-		if (x + 1 < crossword.getSize()) if (crossword.getGrid()[x+1][y].getLetter() != '-') right = true;
-		if (y > 0) if (crossword.getGrid()[x][y-1].getLetter() != '-') up = true;
-		if (y + 1 < crossword.getSize()) if (crossword.getGrid()[x][y+1].getLetter() != '-') down = true;
+		if (x > 0) if (crossword.getGrid()[x-1][y].getOriginalColor() != 1) left = true;
+		if (x + 1 < crossword.getSize()) if (crossword.getGrid()[x+1][y].getOriginalColor() != 1) right = true;
+		if (y > 0) if (crossword.getGrid()[x][y-1].getOriginalColor() != 1) up = true;
+		if (y + 1 < crossword.getSize()) if (crossword.getGrid()[x][y+1].getOriginalColor() != 1) down = true;
 		return (left && up) || (left && down) || (right && up) || (right && down);
 	}
 	

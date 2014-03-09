@@ -103,8 +103,7 @@ public class MasterDictionary {
 		Word w = d.getWord(start);
 		Word test=w;
 		while (!done) {
-			if(first>=1)
-			System.out.println(d.words.get(first).Word+" "+test.getWord()+" "+w.getWord() +" "+ jump + " " + first);
+			//if(first>=1) System.out.println(d.words.get(first).Word+" "+test.getWord()+" "+w.getWord() +" "+ jump + " " + first);
 
 			// for every letter
 			for (int i = 0; i < s.length(); i++) {
@@ -138,8 +137,8 @@ public class MasterDictionary {
 			}
 		}
 		// return word
-		System.out.println();
-		System.out.println();
+		//System.out.println();
+		//System.out.println();
 		return w;
 	}
 

@@ -64,7 +64,7 @@ public class SetterView {
 			for (int x = 0; x < crossword.getSize(); x++) {
 				crossword.getGrid()[x][y].solve();
 				crossword.getGrid()[x][y].getPanel().addMouseListener(new MouseSelectionListener());
-				if (crossword.getGrid()[x][y].getLetter() == '-')
+				if (crossword.getGrid()[x][y].getOriginalColor() == 1)
 					crossword.getGrid()[x][y].getDisplayed().setForeground(Color.BLACK);
 			}
 		view.addMouseListener(new MouseDeselectionListener());
@@ -560,7 +560,7 @@ public class SetterView {
 					crossword.getGrid()[x][y].fixNote();
 				}
 				// color the white squares
-				else if (crossword.getGrid()[x][y].getLetter() != '-') {
+				else if (crossword.getGrid()[x][y].getOriginalColor() != 1) {
 					crossword.getGrid()[x][y].getPanel().setBackground(Color.WHITE);
 					crossword.getGrid()[x][y].getDisplayed().setForeground(Color.BLACK);
 					crossword.getGrid()[x][y].getNote().setForeground(Color.BLACK);

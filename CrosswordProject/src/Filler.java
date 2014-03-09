@@ -26,11 +26,13 @@ public class Filler {
 		dict = d;
 		places = new HashMap<String, int[]>();
 		for (int y = 0; y < grid.length; y++)
-			for (int x = 0; x < grid.length; x++)
+			for (int x = 0; x < grid.length; x++) {
 				if (grid[x][y].getNote().getText() != "") {
 					int[] position = { x, y }; // use (int[]) when getting
 					places.put(grid[x][y].getNote().getText(), position);
 				}
+				grid[x][y].assignOriginalColor();
+			}
 		total = places.keySet().toArray().length;
 		success = false;
 	}
@@ -149,7 +151,7 @@ public class Filler {
 		ArrayList<String> wordsTried=new ArrayList<String>();
 		String pattern = findAcrossWord(i);
 		Word word = dict.getFeasibleWord(pattern, dict.getRandom(pattern.length()));
-		System.out.println(pattern);
+		//System.out.println(pattern);
 		while (!success && word != null) {
 
 			if (matches(word.getWord(), pattern) && !contains(exists, word.getWord())) {
@@ -177,7 +179,7 @@ public class Filler {
 		ArrayList<String> wordsTried=new ArrayList<String>();
 		String pattern = findDownWord(i);
 		Word word = dict.getFeasibleWord(pattern, dict.getRandom(pattern.length()));
-		System.out.println(pattern);
+		//System.out.println(pattern);
 
 		while (!success && word != null) {
 
@@ -205,5 +207,25 @@ public class Filler {
 
 	public Square[][] getGrid() {
 		return grid;
+	}
+	
+	public boolean isSuccessful() {
+		for (int y = 0; y < grid.length; y++)
+			for (int x = 0; x < grid.length; x++)
+				if (grid[x][y].getLetter() == '-' && grid[x][y].getOriginalColor() == 0) return false;
+		return true;
+	}
+	
+	public boolean emptyGrid() {
+		for (int y = 0; y < grid.length; y++)
+			for (int x = 0; x < grid.length; x++)
+				if (grid[x][y].getLetter() != '-' && grid[x][y].getOriginalColor() == 0) return false;
+		return true;
+	}
+
+	public void resetGrid() {
+		for (int y = 0; y < grid.length; y++)
+			for (int x = 0; x < grid.length; x++)
+				if (grid[x][y].getOriginalColor() == 0) grid[x][y].setLetter('-');
 	}
 }
