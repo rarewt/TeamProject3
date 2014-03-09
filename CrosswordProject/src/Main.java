@@ -107,7 +107,7 @@ public class Main {
 					if (filler.emptyGrid()) {i--; continue;}
 				}
 				// use the grid to generate a crossword
-				crossword = new Crossword(filler.getGrid(), masterDictionary);
+				if (!cancelled) crossword = new Crossword(filler.getGrid(), masterDictionary);
 			}
 			else crossword = startView.getLoadedCrossword();
 			
@@ -158,7 +158,7 @@ public class Main {
 		loadingBar.setFont(new Font(loadingBar.getFont().getName(), Font.BOLD, 16));
 		loadingPanel.add(loadingBar, new GridBagConstraints());
 		if (cancellable == 1) {
-			loadingPanel.addMouseListener(new MouseListener() {
+			loadingBar.addMouseListener(new MouseListener() {
 				public void mouseClicked(MouseEvent arg0) {}
 				public void mouseEntered(MouseEvent arg0) {}
 				public void mouseExited(MouseEvent arg0) {}
