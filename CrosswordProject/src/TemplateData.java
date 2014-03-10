@@ -12,8 +12,10 @@ public class TemplateData {
 	
 	public TemplateData() {
 		templates = new HashMap<Integer, HashMap<String, String>>();
-		File templatesFolder = new File("templates"); // default folder
-		for (File file : templatesFolder.listFiles()) { // each file stores a single template
+		File projectDir = new File(System.getProperty("user.dir"));
+		File dataDir = new File(projectDir, "data");
+		File templatesDir = new File(dataDir, "templates"); // default folder
+		for (File file : templatesDir.listFiles()) { // each file stores a single template
 			if (!file.isDirectory() && file.getName().toLowerCase().endsWith(".txt")) {
 				try {
 					FileReader reader = new FileReader(file);

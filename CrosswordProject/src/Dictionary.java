@@ -75,7 +75,10 @@ public class Dictionary {
 	}
 
 	public void setupMatrices() {
-		File m = new File("matrices" + this.getWordSize() + ".txt");
+		File projectDir = new File(System.getProperty("user.dir"));
+		File dataDir = new File(projectDir, "data");
+	    File matricesDir = new File(dataDir, "matrices");
+		File m = new File(matricesDir, "matrices" + this.getWordSize() + ".txt");
 		if (!m.exists()) {
 			CreateMatrices();
 		}
@@ -115,7 +118,10 @@ public class Dictionary {
 			}
 		}
 		try {
-			File m = new File("matrices" + this.getWordSize() + ".txt");
+			File projectDir = new File(System.getProperty("user.dir"));
+			File dataDir = new File(projectDir, "data");
+		    File matricesDir = new File(dataDir, "matrices");
+			File m = new File(matricesDir, "matrices" + this.getWordSize() + ".txt");
 			BufferedWriter output = new BufferedWriter(new FileWriter(m));
 
 			while (cursor != this.words.get(0)) {

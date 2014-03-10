@@ -59,7 +59,9 @@ public class Main {
 			// complete the dictionary
 			if (masterDictionary == null) { // executes only in the 1st cycle
 				masterDictionary = new MasterDictionary();
-				File file = new File("wordclues.txt");				
+				File projectDir = new File(System.getProperty("user.dir"));
+				File dataDir = new File(projectDir, "data");
+				File file = new File(dataDir, "dictionary.txt");				
 					try {
 						Scanner input = new Scanner(file);
 						while (input.hasNextLine()) {
