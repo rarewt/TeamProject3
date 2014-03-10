@@ -61,7 +61,8 @@ public class Main {
 				masterDictionary = new MasterDictionary();
 				File projectDir = new File(System.getProperty("user.dir"));
 				File dataDir = new File(projectDir, "data");
-				File file = new File(dataDir, "dictionary.txt");				
+			    File matricesDir = new File(dataDir, "matrices");
+				File file = new File(matricesDir, "dictionary.txt");				
 					try {
 						Scanner input = new Scanner(file);
 						while (input.hasNextLine()) {
