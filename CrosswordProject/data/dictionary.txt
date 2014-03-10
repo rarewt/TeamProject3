@@ -22399,7 +22399,7 @@ SPICE
 SPINE
  (n.) Back bone.
 
-SPOOK 
+SPOOK
  (n.) A ghostly intelligence operative.
 
 SQUAD
@@ -22519,7 +22519,7 @@ TRADE
 TROLL
  (n.) Scary monster found near Hogwarts dungeon.
 
-TRUCK 
+TRUCK
  (n.) Large vehicle for moving vast amounts of produce.
 
 TUNER
