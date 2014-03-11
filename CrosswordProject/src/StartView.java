@@ -7,6 +7,7 @@ import java.awt.GridLayout;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -44,7 +45,6 @@ public class StartView {
 	private ArrayList<GridPreview> previewCache;
 	private GridPreview selectedPreview;
 	private boolean ready;
-	private JFileChooser chooser;
 	private Crossword loadedCrossword; // used for direct loading
 	
 	public StartView() {		
@@ -287,7 +287,7 @@ public class StartView {
 	
 	private class ImportTemplateListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
-    		chooser = new JFileChooser(System.getProperty("user.dir"));
+			JFileChooser chooser = new JFileChooser(System.getProperty("user.dir"));
     		chooser.setFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
     		chooser.setDialogTitle("Select File");
 			int returnValue = chooser.showOpenDialog(null);
@@ -312,8 +312,29 @@ public class StartView {
 	}
 	
 	private class ExportTemplateListener implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
-			// placeholder
+		public void actionPerformed(ActionEvent event) {
+			JFileChooser chooser = new JFileChooser(System.getProperty("user.dir"));
+    		chooser.setFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
+    		chooser.setDialogTitle("Select File");
+			int returnValue = chooser.showSaveDialog(null);
+			if (returnValue == JFileChooser.APPROVE_OPTION) {
+				try {
+					File file = new File(chooser.getSelectedFile() + ".txt");
+					PrintWriter writer = new PrintWriter(file, "UTF-8");
+					String output = "";
+					for (int y=0; y < selectedPreview.getSize(); y++) {
+						for (int x=0; x < selectedPreview.getSize(); x++) {
+							if (selectedPreview.getGrid()[x][y].getPanel().getBackground() == Color.WHITE)
+								output += "-";
+							else
+								output += "#";
+						}
+						output += "\n";
+					}
+					writer.println(output);
+					writer.close();
+				} catch (IOException e) {}
+			}
 		}	
 	}
 	

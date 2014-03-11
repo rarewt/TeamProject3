@@ -10,12 +10,16 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenu;
@@ -28,6 +32,7 @@ import javax.swing.SpringLayout;
 import javax.swing.ToolTipManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class PlayerView {
 
@@ -596,8 +601,29 @@ public class PlayerView {
 	}
 	
 	private class ExportTemplateListener implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
-			// placeholder
+		public void actionPerformed(ActionEvent event) {
+			JFileChooser chooser = new JFileChooser(System.getProperty("user.dir"));
+    		chooser.setFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
+    		chooser.setDialogTitle("Select File");
+			int returnValue = chooser.showSaveDialog(null);
+			if (returnValue == JFileChooser.APPROVE_OPTION) {
+				try {
+					File file = new File(chooser.getSelectedFile() + ".txt");
+					PrintWriter writer = new PrintWriter(file, "UTF-8");
+					String output = "";
+					for (int y=0; y < crossword.getSize(); y++) {
+						for (int x=0; x < crossword.getSize(); x++) {
+							if (crossword.getGrid()[x][y].getOriginalColor() == 0)
+								output += "-";
+							else
+								output += "#";
+						}
+						output += "\n";
+					}
+					writer.println(output);
+					writer.close();
+				} catch (IOException e) {}
+			}
 		}	
 	}
 	

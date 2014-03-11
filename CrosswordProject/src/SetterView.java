@@ -11,11 +11,15 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenu;
@@ -32,6 +36,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.alee.extended.window.ComponentMoveAdapter;
 import com.alee.managers.popup.WebPopup;
@@ -42,6 +47,7 @@ public class SetterView {
 	private JPanel view, crosswordPanel, controlsPanel, cluePanel, optionsPanel;
 	private JMenu fileMenu, viewMenu, helpMenu;
 	private JList clueList;
+	ArrayList<String> list;
 	private Crossword crossword;
 	private JButton editWordButton, editClueButton, resetButton, confirmButton, cancelButton;
 	private String selectedClue;
@@ -101,6 +107,7 @@ public class SetterView {
 		options.getSaveCrossword().addActionListener(new SaveCrosswordListener());
 		options.getLoadCrossword().addActionListener(new LoadCrosswordListener());
 		options.getExportTemplate().addActionListener(new ExportTemplateListener());
+		options.getExportPdfTemplate().addActionListener(new exportPdfListener());
 		view.add(optionsPanel);
 		
 		// contains the crossword with the solution displayed	
@@ -142,7 +149,7 @@ public class SetterView {
 			Object[] across = crossword.getAcross().keySet().toArray();
 			Object[] down = crossword.getDown().keySet().toArray();
 			Arrays.sort(across); Arrays.sort(down);
-			ArrayList<String> list = new ArrayList<String>();
+			list = new ArrayList<String>();
 			list.add("<html><b>Across</b></html>");
 			for (int i = 0; i < across.length; i++)
 				list.add(across[i] + "a. " + crossword.getAcross().get(across[i])[1] +
@@ -576,17 +583,35 @@ public class SetterView {
 		if (inputMode == 0) {
 			int x = editedX;
 			int y = editedY;
-			String inputWord = inputField.getText().toUpperCase();
-			if (selectedDirection == 0)
+			String inputWord = inputField.getText().toLowerCase();
+			if (selectedDirection == 0) {
+				// change the across hashmap
+				int wordNumber = Integer.parseInt(crossword.getGrid()[x][y].getNote().getText());
+				String clue = "" + crossword.getAcross().get(wordNumber)[1];
+				crossword.getAcross().remove(wordNumber);
+				String[] wordData = {inputWord, clue};
+				crossword.getAcross().put(wordNumber, wordData);
+				// change the displayed grid
+				inputWord = inputWord.toUpperCase();
 				for (int l = 0; l < originalWordLength; l++) {
 					crossword.getGrid()[x][y].getDisplayed().setText("" + inputWord.charAt(l));
 					x++;
 				}
-			else
+			}
+			else {
+				// change the down hashmap
+				int wordNumber = Integer.parseInt(crossword.getGrid()[x][y].getNote().getText());
+				String clue = "" + crossword.getDown().get(wordNumber)[1];
+				crossword.getDown().remove(wordNumber);
+				String[] wordData = {inputWord, clue};
+				crossword.getDown().put(wordNumber, wordData);
+				// change the displayed grid
+				inputWord = inputWord.toUpperCase();
 				for (int l = 0; l < originalWordLength; l++) {
 					crossword.getGrid()[x][y].getDisplayed().setText("" + inputWord.charAt(l));
 					y++;
 				}
+			}
 		}
 		// clue editing
 		else {
@@ -652,9 +677,48 @@ public class SetterView {
 	}
 	
 	private class ExportTemplateListener implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
-			// placeholder
+		public void actionPerformed(ActionEvent event) {
+			JFileChooser chooser = new JFileChooser(System.getProperty("user.dir"));
+    		chooser.setFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
+    		chooser.setDialogTitle("Select File");
+			int returnValue = chooser.showSaveDialog(null);
+			if (returnValue == JFileChooser.APPROVE_OPTION) {
+				try {
+					File file = new File(chooser.getSelectedFile() + ".txt");
+					PrintWriter writer = new PrintWriter(file, "UTF-8");
+					String output = "";
+					for (int y=0; y < crossword.getSize(); y++) {
+						for (int x=0; x < crossword.getSize(); x++) {
+							if (crossword.getGrid()[x][y].getOriginalColor() == 0)
+								output += "-";
+							else
+								output += "#";
+						}
+						output += "\n";
+					}
+					writer.println(output);
+					writer.close();
+				} catch (IOException e) {}
+			}
 		}	
+	}
+	
+	public class exportPdfListener implements ActionListener {
+		public void actionPerformed(ActionEvent e){
+			// grab the modified clues
+			ArrayList<String> madoka = new ArrayList<String>();
+			ListModel model = clueList.getModel();
+			for (int i = 0; i < model.getSize(); i++) {
+				String cropped = "";
+				String[] separated = ((String) model.getElementAt(i)).split(" ");
+				for (int j = 1; j < separated.length - 1; j++) {
+					cropped += separated[j];
+					if (j != separated.length - 2) cropped += " ";
+				}
+				madoka.add(cropped);
+			}
+			FilePDF pdf = new FilePDF(crossword, madoka);
+		}
 	}
 	
 	public boolean isReloading() {
