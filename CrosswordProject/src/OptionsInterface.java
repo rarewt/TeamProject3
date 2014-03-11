@@ -1,7 +1,9 @@
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -14,7 +16,7 @@ public class OptionsInterface {
 	private JMenuBar menuBar;
 	private JMenu optionsMenu, helpMenu;
 	private JMenuItem newCrossword, exitProgram, loadCrossword, saveCrossword,
-					  importTemplate, exportTemplate, exportPdfTemplate, openGuide, openAbout;
+					  importTemplate, exportTemplate, exportPdfTemplate, openManual, openAbout;
 	
 	public OptionsInterface(int mode) { // 0 for startup; anything else for player/setter
 		// main container
@@ -69,11 +71,11 @@ public class OptionsInterface {
 		helpMenu.setFont(new Font(helpMenu.getFont().getName(), Font.PLAIN, 15));
 		menuBar.add(helpMenu);
 		
-		// 'Help > Guide' menu item
-		openGuide = new JMenuItem("Guide");
-		openGuide.addActionListener(new GuideListener());
-		openGuide.setFont(new Font(openGuide.getFont().getName(), Font.PLAIN, 15));
-		helpMenu.add(openGuide);
+		// 'Help > Manual' menu item
+		openManual = new JMenuItem("Manual");
+		openManual.addActionListener(new ManualListener());
+		openManual.setFont(new Font(openManual.getFont().getName(), Font.PLAIN, 15));
+		helpMenu.add(openManual);
 		
 		// 'Help > About' menu item
 		openAbout = new JMenuItem("About");
@@ -125,8 +127,8 @@ public class OptionsInterface {
 		return exportPdfTemplate;
 	}
 
-	public JMenuItem getOpenGuide() {
-		return openGuide;
+	public JMenuItem getOpenManual() {
+		return openManual;
 	}
 
 	public JMenuItem getOpenAbout() {
@@ -141,15 +143,24 @@ public class OptionsInterface {
 		}	
 	}
 	
-	private class GuideListener implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
-			
+	// the google docs should not be editable in the final release
+	private class ManualListener implements ActionListener {
+		public void actionPerformed(ActionEvent event) {
+			try {
+				 Desktop.getDesktop().browse(
+						 new URL("https://docs.google.com/document/d/1hNYoJ2jyC_ltZiyLx6tmeh_PPe2JvUFmYdrw_AfOcLo/edit?usp=sharing").toURI());
+			}
+			catch (Exception e) {}
 		}	
 	}
 	
 	private class AboutListener implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
-			
+		public void actionPerformed(ActionEvent event) {
+			try {
+				 Desktop.getDesktop().browse(
+						 new URL("https://docs.google.com/document/d/1CvpjAF1VvyazZF7xjmhEVP3pjd9z1gdawAYRTf9NTzs/edit?usp=sharing").toURI());
+			}
+			catch (Exception e) {}
 		}	
 	}
 	
