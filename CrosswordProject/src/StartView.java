@@ -217,7 +217,7 @@ public class StartView {
 		public void valueChanged(ListSelectionEvent e) {
 			if (templateList.getSelectedValue() != null) {
 				String templateName = (String) templateList.getSelectedValue();
-				selectTemplate(data.getTemplates().get(sizeSlider.getValue()*2+3).get(templateName));
+				selectTemplate(data.getTemplates().get(sizeSlider.getValue()*2+3).get(templateName), false);
 			}
 		}
     }
@@ -243,10 +243,10 @@ public class StartView {
     // this method is invoked every time a template is selected from the list;
     // it creates a new grid preview (using the template) to replace
     // the current one and visualizes it in the previewPanel
-    public void selectTemplate(String template) {
+    public void selectTemplate(String template, boolean imported) {
     	if (selectedPreview.toString().equals(template)) return;
 		previewPanel.removeAll();
-		selectedPreview = setupPreview(template);
+		selectedPreview = setupPreview(template, imported);
 		previewPanel.add(selectedPreview.getVisuals(), BorderLayout.CENTER);
 		previewPanel.revalidate();
 		previewPanel.repaint();
@@ -258,12 +258,14 @@ public class StartView {
     
     // searches the cache for a certain preview and returns it
     // if that preview is not in the cache - returns a new one
-    public GridPreview setupPreview(String template) {
-		for (int i = 0; i < previewCache.size(); i++)
-			if (previewCache.get(i).toString().equals(template)) {
-				previewCache.get(i).reset(); // removing this line enables saving preview edits
-				return previewCache.get(i);
-			}
+    public GridPreview setupPreview(String template, boolean imported) {
+    	if (!imported) {
+			for (int i = 0; i < previewCache.size(); i++)
+				if (previewCache.get(i).toString().equals(template)) {
+					previewCache.get(i).reset(); // removing this line enables saving preview edits
+					return previewCache.get(i);
+				}
+    	}
 		GridPreview newPreview = new GridPreview(template);
 		previewCache.add(newPreview);
 		return newPreview;
@@ -302,7 +304,7 @@ public class StartView {
 						if (lineScanner.hasNext()) importedTemplate += ",";
 						else break;
 					}
-					selectTemplate(importedTemplate);
+					selectTemplate(importedTemplate, true);
 					lineScanner.close();
 					reader.close();
 				} catch (IOException e) {}
