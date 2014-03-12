@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.FileOutputStream;
 
 
@@ -26,8 +27,8 @@ public class FilePDF {
 	private ArrayList<String> clueList;
 	private Crossword crossword;
 	private static String path = System.getProperty("user.dir");
-	private static String FILE = path + "\\Crossword.pdf";
-	 private static Font catFont = new Font(Font.FontFamily.TIMES_ROMAN, 18,
+	private static String FILE = path + File.separator + "Crossword.pdf";
+	private static Font catFont = new Font(Font.FontFamily.TIMES_ROMAN, 18,
 	      Font.BOLD);
 	private static Font subFont = new Font(Font.FontFamily.TIMES_ROMAN, 16,
 		      Font.BOLD);

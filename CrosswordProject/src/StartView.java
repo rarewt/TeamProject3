@@ -53,7 +53,7 @@ public class StartView {
 		for (HashMap<String, String> group : data.getTemplates().values())
 			for (String template : group.values()) previewCache.add(new GridPreview(template));
 		selectedPreview = new GridPreview("");
-		selectedMode = 0; // player is default
+		selectedMode = 1; // setter is default
 		ready = false;
 
 		view = new JPanel();
@@ -175,6 +175,13 @@ public class StartView {
 		
 		// radio buttons for switching between setter and player mode
 		ButtonGroup modeButtons = new ButtonGroup();
+		setterButton = new JRadioButton(" Editing Mode");
+		setterButton.addActionListener(new SetterButtonListener());	
+		setterButton.setFont(new Font(setterButton.getFont().getName(), Font.PLAIN, 15));
+		setterButton.setBackground(Color.decode("#F5F5F5"));
+		setterButton.setFocusable(false);
+		modeButtons.add(setterButton);	
+		modePanel.add(setterButton);	
 		playerButton = new JRadioButton(" Solving Mode");
 		playerButton.addActionListener(new PlayerButtonListener());	
 		playerButton.setFont(new Font(playerButton.getFont().getName(), Font.PLAIN, 15));
@@ -182,14 +189,7 @@ public class StartView {
 		playerButton.setFocusable(false);
 		modeButtons.add(playerButton);
 		modePanel.add(playerButton);
-		setterButton = new JRadioButton(" Editing Mode");
-		setterButton.addActionListener(new SetterButtonListener());	
-		setterButton.setFont(new Font(setterButton.getFont().getName(), Font.PLAIN, 15));
-		setterButton.setBackground(Color.decode("#F5F5F5"));
-		setterButton.setFocusable(false);
-		modeButtons.add(setterButton);	
-		modePanel.add(setterButton);		
-		playerButton.setSelected(true);
+		setterButton.setSelected(true);
 	}
 	
     private class sizeSliderListener implements ChangeListener {

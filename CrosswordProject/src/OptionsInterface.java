@@ -38,20 +38,20 @@ public class OptionsInterface {
 		// 'Options > Save Crossword' menu item
 		saveCrossword = new JMenuItem("Save Crossword");
 		saveCrossword.setFont(new Font(saveCrossword.getFont().getName(), Font.PLAIN, 15));
-		optionsMenu.add(saveCrossword);
+		// optionsMenu.add(saveCrossword);
 		
 		// 'Options > Load Crossword' menu item
 		loadCrossword = new JMenuItem("Load Crossword");
 		loadCrossword.setFont(new Font(newCrossword.getFont().getName(), Font.PLAIN, 15));
-		optionsMenu.add(loadCrossword);
+		// optionsMenu.add(loadCrossword);
 		
 		// 'Options > Export Grid Template' menu item
-		exportTemplate = new JMenuItem("Export Grid Template");
+		exportTemplate = new JMenuItem("Export Template");
 		exportTemplate.setFont(new Font(exportTemplate.getFont().getName(), Font.PLAIN, 15));
 		optionsMenu.add(exportTemplate);
 		
 		// 'Options > Import Grid Template' menu item
-		importTemplate = new JMenuItem("Import Grid Template");
+		importTemplate = new JMenuItem("Import Template");
 		importTemplate.setFont(new Font(importTemplate.getFont().getName(), Font.PLAIN, 15));
 		optionsMenu.add(importTemplate);
 		

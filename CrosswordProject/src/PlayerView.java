@@ -531,7 +531,7 @@ public class PlayerView {
 				// the rest are for the unselected squares
 				// color the marked squares
 				if (crossword.getGrid()[x][y].isMarked()) {
-					crossword.getGrid()[x][y].getPanel().setBackground(Color.decode("#DCDCDC"));
+					crossword.getGrid()[x][y].getPanel().setBackground(Color.decode("#D3D3D3"));
 					crossword.getGrid()[x][y].getDisplayed().setForeground(Color.BLACK);
 					crossword.getGrid()[x][y].getNote().setForeground(Color.BLACK);
 					crossword.getGrid()[x][y].fixNote();

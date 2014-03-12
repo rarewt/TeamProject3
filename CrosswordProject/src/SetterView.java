@@ -41,6 +41,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import com.alee.extended.window.ComponentMoveAdapter;
 import com.alee.managers.popup.WebPopup;
 import com.alee.managers.popup.PopupStyle;
+import com.itextpdf.text.Chunk;
 
 public class SetterView {
 
@@ -561,7 +562,7 @@ public class SetterView {
 			for (int x = 0; x < crossword.getSize(); x++) {
 				// color the marked squares
 				if (crossword.getGrid()[x][y].isMarked()) {
-					crossword.getGrid()[x][y].getPanel().setBackground(Color.decode("#DCDCDC"));
+					crossword.getGrid()[x][y].getPanel().setBackground(Color.decode("#D3D3D3"));
 					crossword.getGrid()[x][y].getDisplayed().setForeground(Color.BLACK);
 					crossword.getGrid()[x][y].getNote().setForeground(Color.BLACK);
 					crossword.getGrid()[x][y].fixNote();
@@ -706,18 +707,25 @@ public class SetterView {
 	public class exportPdfListener implements ActionListener {
 		public void actionPerformed(ActionEvent e){
 			// grab the modified clues
-			ArrayList<String> madoka = new ArrayList<String>();
+			ArrayList<String> clues = new ArrayList<String>();
 			ListModel model = clueList.getModel();
 			for (int i = 0; i < model.getSize(); i++) {
-				String cropped = "";
-				String[] separated = ((String) model.getElementAt(i)).split(" ");
-				for (int j = 1; j < separated.length - 1; j++) {
-					cropped += separated[j];
-					if (j != separated.length - 2) cropped += " ";
+				if (((String) model.getElementAt(i)).startsWith("<html")) {
+					clues.add(" ");
+					clues.add(list.get(i).substring(9, list.get(i).length() - 11) + " ");
+					clues.add(" ");
 				}
-				madoka.add(cropped);
+				else {
+					String cropped = "";
+					String[] separated = ((String) model.getElementAt(i)).split(" ");
+					for (int j = 0; j < separated.length - 1; j++) {
+						cropped += separated[j];
+						if (j != separated.length - 2) cropped += " ";
+					}
+					clues.add(cropped);
+				}
 			}
-			FilePDF pdf = new FilePDF(crossword, madoka);
+			FilePDF pdf = new FilePDF(crossword, clues);
 		}
 	}
 	

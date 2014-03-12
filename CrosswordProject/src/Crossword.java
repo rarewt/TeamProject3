@@ -86,7 +86,7 @@ public class Crossword {
 			String str = "";
 			boolean copyChar = false;
 			for (int i = 0; i < value[1].length(); i++) {
-				if (str.endsWith(".") && !(str.endsWith("Alt.") || str.endsWith("Pl."))) break;
+				if (str.endsWith(".") && !(str.endsWith("Alt.") || str.endsWith("Pl.") || str.endsWith("P."))) break;
 				if (value[1].charAt(i) == ')') {copyChar = true; continue;}
 				if (value[1].charAt(i) == ';') break;
 				if (copyChar) str += value[1].charAt(i);
