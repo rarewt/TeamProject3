@@ -194,7 +194,7 @@ public class SetterView {
 		controlsPanel.add(editClueButton);
 		
 		// reset words button
-		resetButton = new JButton("Reset Words + Clues");
+		resetButton = new JButton("Reset Words & Clues");
 		resetButton.addActionListener(new ResetButtonListener());
 		controlsLayout.putConstraint(SpringLayout.NORTH, resetButton, 10, SpringLayout.SOUTH, editWordButton);
 		controlsLayout.putConstraint(SpringLayout.WEST, resetButton, 0, SpringLayout.WEST, controlsPanel);
