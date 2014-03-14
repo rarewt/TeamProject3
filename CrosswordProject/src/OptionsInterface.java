@@ -14,7 +14,7 @@ import javax.swing.JMenuItem;
 public class OptionsInterface {
 	
 	private JMenuBar menuBar;
-	private JMenu optionsMenu, helpMenu;
+	private JMenu fileMenu, helpMenu;
 	private JMenuItem newCrossword, exitProgram, loadCrossword, saveCrossword,
 					  importTemplate, exportTemplate, exportPdfTemplate, openManual, openAbout;
 	
@@ -22,49 +22,49 @@ public class OptionsInterface {
 		// main container
 		menuBar = new JMenuBar();
 		menuBar.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, Color.decode("#AAAAAA")));
-		menuBar.add(new JLabel("   "));
+		menuBar.add(new JLabel("    "));
 		
-		// 'Options' menu		
-		optionsMenu = new JMenu("Options");
-		optionsMenu.setFont(new Font(optionsMenu.getFont().getName(), Font.PLAIN, 15));
-		menuBar.add(optionsMenu);
-		menuBar.add(new JLabel(" "));
+		// 'File' menu		
+		fileMenu = new JMenu("File");
+		fileMenu.setFont(new Font(fileMenu.getFont().getName(), Font.PLAIN, 15));
+		menuBar.add(fileMenu);
+		menuBar.add(new JLabel("  "));
 		
-		// 'Options > New Crossword' menu item
+		// 'File > New Crossword' menu item
 		newCrossword = new JMenuItem("New Crossword");
 		newCrossword.setFont(new Font(newCrossword.getFont().getName(), Font.PLAIN, 15));
-		optionsMenu.add(newCrossword);
+		fileMenu.add(newCrossword);
 		
-		// 'Options > Save Crossword' menu item
+		// 'File > Save Crossword' menu item
 		saveCrossword = new JMenuItem("Save Crossword");
 		saveCrossword.setFont(new Font(saveCrossword.getFont().getName(), Font.PLAIN, 15));
-		// optionsMenu.add(saveCrossword);
+		// fileMenu.add(saveCrossword);
 		
-		// 'Options > Load Crossword' menu item
+		// 'File > Load Crossword' menu item
 		loadCrossword = new JMenuItem("Load Crossword");
 		loadCrossword.setFont(new Font(newCrossword.getFont().getName(), Font.PLAIN, 15));
-		// optionsMenu.add(loadCrossword);
+		// fileMenu.add(loadCrossword);
 		
-		// 'Options > Export Grid Template' menu item
+		// 'File > Export Grid Template' menu item
 		exportTemplate = new JMenuItem("Export Template");
 		exportTemplate.setFont(new Font(exportTemplate.getFont().getName(), Font.PLAIN, 15));
-		optionsMenu.add(exportTemplate);
+		fileMenu.add(exportTemplate);
 		
-		// 'Options > Import Grid Template' menu item
+		// 'File > Import Grid Template' menu item
 		importTemplate = new JMenuItem("Import Template");
 		importTemplate.setFont(new Font(importTemplate.getFont().getName(), Font.PLAIN, 15));
-		optionsMenu.add(importTemplate);
+		fileMenu.add(importTemplate);
 		
-		// 'Options > Export as PDF' menu item
+		// 'File > Export as PDF' menu item
 		exportPdfTemplate = new JMenuItem("Export as PDF");
 		exportPdfTemplate.setFont(new Font(exportPdfTemplate.getFont().getName(), Font.PLAIN, 15));
-		optionsMenu.add(exportPdfTemplate);
+		fileMenu.add(exportPdfTemplate);
 		
-		// 'Options > Exit' menu item
+		// 'File > Exit' menu item
 		exitProgram = new JMenuItem("Exit");
 		exitProgram.addActionListener(new ExitListener());
 		exitProgram.setFont(new Font(exitProgram.getFont().getName(), Font.PLAIN, 15));
-		optionsMenu.add(exitProgram);
+		fileMenu.add(exitProgram);
 		
 		// 'Help' menu		
 		helpMenu = new JMenu("Help");
