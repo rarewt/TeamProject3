@@ -603,8 +603,8 @@ public class PlayerView {
 	private class ExportTemplateListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
 			JFileChooser chooser = new JFileChooser(System.getProperty("user.dir"));
-    		chooser.setFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
-    		chooser.setDialogTitle("Select File");
+			chooser.setFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
+			chooser.setDialogTitle("Select File");
 			int returnValue = chooser.showSaveDialog(null);
 			if (returnValue == JFileChooser.APPROVE_OPTION) {
 				try {

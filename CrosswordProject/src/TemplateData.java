@@ -12,6 +12,9 @@ public class TemplateData {
 	
 	public TemplateData() {
 		templates = new HashMap<Integer, HashMap<String, String>>();
+	}
+	
+	public void scanTemplates() {
 		File projectDir = new File(System.getProperty("user.dir"));
 		File dataDir = new File(projectDir, "data");
 		File templatesDir = new File(dataDir, "templates"); // default folder

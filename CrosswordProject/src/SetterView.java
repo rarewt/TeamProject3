@@ -582,6 +582,7 @@ public class SetterView {
 	public void placeEdit() {
 		// word editing
 		if (inputMode == 0) {
+			if (!confirmButton.isEnabled()) return;
 			int x = editedX;
 			int y = editedY;
 			String inputWord = inputField.getText().toLowerCase();

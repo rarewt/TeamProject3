@@ -44,16 +44,18 @@ public class StartView {
 	private int selectedMode; // 0 for player / 1 for setter
 	private ArrayList<GridPreview> previewCache;
 	private GridPreview selectedPreview;
-	private boolean ready;
+	private boolean listLocked, ready;
 	private Crossword loadedCrossword; // used for direct loading
 	
 	public StartView() {		
 		data = new TemplateData();
+		data.scanTemplates();
 		previewCache = new ArrayList<GridPreview>();
 		for (HashMap<String, String> group : data.getTemplates().values())
 			for (String template : group.values()) previewCache.add(new GridPreview(template));
 		selectedPreview = new GridPreview("");
 		selectedMode = 1; // setter is default
+		listLocked = false;
 		ready = false;
 
 		view = new JPanel();
@@ -215,7 +217,7 @@ public class StartView {
     
     private class TemplateListListener implements ListSelectionListener {
 		public void valueChanged(ListSelectionEvent e) {
-			if (templateList.getSelectedValue() != null) {
+			if (templateList.getSelectedValue() != null && !listLocked) {
 				String templateName = (String) templateList.getSelectedValue();
 				selectTemplate(data.getTemplates().get(sizeSlider.getValue()*2+3).get(templateName), false);
 			}
@@ -244,7 +246,6 @@ public class StartView {
     // it creates a new grid preview (using the template) to replace
     // the current one and visualizes it in the previewPanel
     public void selectTemplate(String template, boolean imported) {
-    	if (selectedPreview.toString().equals(template)) return;
 		previewPanel.removeAll();
 		selectedPreview = setupPreview(template, imported);
 		previewPanel.add(selectedPreview.getVisuals(), BorderLayout.CENTER);
@@ -290,8 +291,8 @@ public class StartView {
 	private class ImportTemplateListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
 			JFileChooser chooser = new JFileChooser(System.getProperty("user.dir"));
-    		chooser.setFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
-    		chooser.setDialogTitle("Select File");
+			chooser.setFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
+			chooser.setDialogTitle("Select File");
 			int returnValue = chooser.showOpenDialog(null);
 			if (returnValue == JFileChooser.APPROVE_OPTION) {
 				try { // process the selected file
@@ -316,8 +317,8 @@ public class StartView {
 	private class ExportTemplateListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
 			JFileChooser chooser = new JFileChooser(System.getProperty("user.dir"));
-    		chooser.setFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
-    		chooser.setDialogTitle("Select File");
+			chooser.setFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
+			chooser.setDialogTitle("Select File");
 			int returnValue = chooser.showSaveDialog(null);
 			if (returnValue == JFileChooser.APPROVE_OPTION) {
 				try {
@@ -335,6 +336,18 @@ public class StartView {
 					}
 					writer.println(output);
 					writer.close();
+					// rescan the templates
+					data.getTemplates().clear();
+					data.scanTemplates();
+					if (data.getTemplates().get(sizeSlider.getValue()*2+3) != null) {
+						Object original = templateList.getSelectedValue();
+						Object[] list = data.getTemplates().get(sizeSlider.getValue()*2+3).keySet().toArray();
+						Arrays.sort(list); // order the templates by name
+						listLocked = true;
+						templateList.setListData(list);
+						templateList.setSelectedValue(original, true);
+						listLocked = false;
+					}
 				} catch (IOException e) {}
 			}
 		}	
@@ -353,4 +366,30 @@ public class StartView {
 		return loadedCrossword;
 	}
 	
+	public void reset() {
+		try {Thread.sleep(500);}
+		catch (InterruptedException e) {}
+		// restore the current template
+		for (int i = 0; i < previewCache.size(); i++)
+			if (previewCache.get(i).toString().equals(selectedPreview.toString())) {
+				previewCache.remove(i);
+				break;
+			}
+		selectTemplate(selectedPreview.toString(), true);
+		// rescan the templates
+		data.getTemplates().clear();
+		data.scanTemplates();
+		if (data.getTemplates().get(sizeSlider.getValue()*2+3) != null) {
+			Object original = templateList.getSelectedValue();
+			Object[] list = data.getTemplates().get(sizeSlider.getValue()*2+3).keySet().toArray();
+			Arrays.sort(list); // order the templates by name
+			listLocked = true;
+			templateList.setListData(list);
+			templateList.setSelectedValue(original, true);
+			listLocked = false;
+		}
+		// pause the main thread
+		ready = false;
+	}
+
 }

@@ -81,11 +81,14 @@ public class Main {
 			}
 			
 			// set up the start view
-			startView = new StartView();
+			if (startView == null) startView = new StartView();
+			else startView.reset();
+			frame.getContentPane().setVisible(false);
 			frame.getContentPane().removeAll();
 			frame.getContentPane().add(startView.getView());
 			frame.revalidate();
 			frame.repaint();
+			frame.getContentPane().setVisible(true);
 			
 			// wait until the 'Create Crossword' button is clicked
 			while (!startView.isReady()) {
@@ -172,10 +175,12 @@ public class Main {
 				public void mouseReleased(MouseEvent arg0) {}
 	        });
 		}
+		frame.getContentPane().setVisible(false);
 		frame.getContentPane().removeAll();
 		frame.getContentPane().add(loadingPanel);
 		frame.revalidate();
 		frame.repaint();
+		frame.getContentPane().setVisible(true);
 	}
 
 }
