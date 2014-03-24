@@ -120,13 +120,11 @@ public class Main {
 			if (!cancelled) {
 				while (true) {
 					if (mode == 0) { // player mode
-						frame.getContentPane().setVisible(false);
 						frame.getContentPane().removeAll();
 						playerView = new PlayerView(crossword); // set up
 						frame.getContentPane().add(playerView.getView());
 						frame.revalidate();
 						frame.repaint(); // display
-						frame.getContentPane().setVisible(true);
 						while (!playerView.isReady()) { // 'New Crossword' is clicked
 							try {Thread.sleep(100);}
 							catch (InterruptedException e) {}
@@ -135,13 +133,11 @@ public class Main {
 						else break;
 					}
 					else { // setter mode
-						frame.getContentPane().setVisible(false);
 						frame.getContentPane().removeAll();
 						setterView = new SetterView(crossword); // set up
 						frame.getContentPane().add(setterView.getView());
 						frame.revalidate();
 						frame.repaint(); // display
-						frame.getContentPane().setVisible(true);
 						while (!setterView.isReady()) { // 'New Crossword' is clicked
 							try {Thread.sleep(100);}
 							catch (InterruptedException e) {}
@@ -179,12 +175,10 @@ public class Main {
 				public void mouseReleased(MouseEvent arg0) {}
 	        });
 		}
-		frame.getContentPane().setVisible(false);
 		frame.getContentPane().removeAll();
 		frame.getContentPane().add(loadingPanel);
 		frame.revalidate();
 		frame.repaint();
-		frame.getContentPane().setVisible(true);
 	}
 
 }
