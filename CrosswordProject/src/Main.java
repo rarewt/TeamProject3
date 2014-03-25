@@ -171,6 +171,7 @@ public class Main {
 				public void mousePressed(MouseEvent arg0) {
 					loadingBar.setString("Cancelling");
 					cancelled = true;
+					filler.setAborted(true);
 				}
 				public void mouseReleased(MouseEvent arg0) {}
 	        });

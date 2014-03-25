@@ -8,6 +8,7 @@ public class Filler {
 	private HashMap<String, int[]> places; // contains coordinates
 	private int total;
 	boolean success = false;
+	private boolean aborted;
 	MasterDictionary dict;
 	// ArrayList<String> dict = new ArrayList<String>();
 	/*
@@ -35,6 +36,7 @@ public class Filler {
 			}
 		total = places.keySet().toArray().length;
 		success = false;
+		aborted = false;
 	}
 
 	// using this with '1' returns the square that
@@ -113,6 +115,7 @@ public class Filler {
 
 	// recursive function to fill grid with letters
 	public void fill(int i, int direction) {
+		if (aborted) return;
 		if (direction == 0) {
 			if (findSquare(i).startsAcrossWord()) {
 				applyAcrossWord(i);
@@ -148,6 +151,7 @@ public class Filler {
 	}
 
 	private void applyAcrossWord(int i) {
+		if (aborted) return;
 		ArrayList<String> wordsTried=new ArrayList<String>();
 		String pattern = findAcrossWord(i);
 		Word word = dict.getFeasibleWord(pattern, dict.getRandom(pattern.length()));
@@ -176,6 +180,7 @@ public class Filler {
 	}
 
 	private void applyDownWord(int i) {
+		if (aborted) return;
 		ArrayList<String> wordsTried=new ArrayList<String>();
 		String pattern = findDownWord(i);
 		Word word = dict.getFeasibleWord(pattern, dict.getRandom(pattern.length()));
@@ -221,4 +226,13 @@ public class Filler {
 			for (int x = 0; x < grid.length; x++)
 				if (grid[x][y].getOriginalColor() == 0) grid[x][y].setLetter('-');
 	}
+
+	public boolean isAborted() {
+		return aborted;
+	}
+
+	public void setAborted(boolean aborted) {
+		this.aborted = aborted;
+	}
+	
 }
